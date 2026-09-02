@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flikhata - Discover & Share Delicious Recipes</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Plus Jakarta Sans & Playfair Display) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Pinterest SDK for easy pinning -->
+    <script async defer src="//assets.pinterest.com/js/pinit.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#FF5722',
+                            red: '#E53935',
+                            yellow: '#FFB300',
+                            dark: '#0F0D0C',
+                            card: '#1C1917',
+                            accent: '#D97706',
+                            gold: '#F59E0B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0F0D0C;
+            color: #F3F4F6;
+            background-image: radial-gradient(rgba(255, 87, 34, 0.1) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        /* Glassmorphic card styling */
+        .glass-card {
+            background: rgba(28, 25, 23, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 87, 34, 0.4);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -10px rgba(255, 87, 34, 0.2);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0F0D0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FF5722;
+            border-radius: 4px;
+        }
+
+        .pinterest-btn {
+            background-color: #E60023;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pinterest-btn:hover {
+            background-color: #ad001a;
+            box-shadow: 0 0 16px rgba(230, 0, 35, 0.6);
+        }
+
+        .glow-effect {
+            position: relative;
+        }
+        .glow-effect::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,87,34,0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-40 bg-[#0F0D0C]/90 backdrop-blur-md border-b border-stone-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Brand Logo -->
+                <a href="#" class="flex items-center space-x-3 group">
+                    <div class="w-11 h-11 bg-gradient-to-tr from-brand-orange via-brand-red to-brand-yellow rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 group-hover:scale-105 transition duration-300">
+                        <i class="fa-solid fa-utensils text-2xl text-white"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-brand-orange via-brand-yellow to-white bg-clip-text text-transparent font-serif">
+                            Flikhata
+                        </span>
+                        <span class="text-[10px] uppercase tracking-widest text-stone-400 block -mt-1 font-sans font-semibold">Taste & Share</span>
+                    </div>
+                </a>
+
+                <!-- Search Bar & Action Button -->
+                <div class="flex items-center gap-4">
+                    <div class="relative hidden md:block">
+                        <input type="text" id="searchInput" onkeyup="filterRecipes()" placeholder="Search pizza, burger, pasta..." 
+                            class="bg-stone-900/90 border border-stone-700 text-sm rounded-full py-2.5 pl-10 pr-4 w-72 focus:outline-none focus:border-brand-orange text-stone-200 transition">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-stone-400 text-sm"></i>
+                    </div>
+                    <button onclick="openAddModal()" class="bg-gradient-to-r from-brand-orange to-brand-red text-white text-sm font-bold px-5 py-2.5 rounded-full flex items-center gap-2 shadow-lg shadow-orange-600/30 hover:brightness-110 active:scale-95 transition">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>Add Recipe</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Search Bar -->
+            <div class="mt-3 md:hidden">
+                <div class="relative">
+                    <input type="text" id="searchInputMobile" onkeyup="filterRecipesMobile()" placeholder="Search recipes..." 
+                        class="w-full bg-stone-900 border border-stone-700 text-sm rounded-full py-2 pl-10 pr-4 focus:outline-none focus:border-brand-orange text-stone-200">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-stone-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative py-16 px-4 overflow-hidden glow-effect">
+        <div class="absolute inset-0 z-0 opacity-20 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1600&q=80');"></div>
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <span class="inline-block bg-orange-500/10 text-brand-orange border border-orange-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+                <i class="fa-solid fa-fire-flame-curved mr-1.5"></i> Culinary Inspirations
+            </span>
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-white mb-5 leading-tight tracking-tight">
+                Craft & Share <span class="text-brand-orange">Cheesy Pizzas</span>, <span class="text-brand-yellow">Juicy Burgers</span> & Gourmet Delights
+            </h1>
+            <p class="text-stone-300 text-base sm:text-lg mb-8 max-w-2xl mx-auto font-normal">
+                Discover mouthwatering recipes created by food lovers. Save and share your favorite food links directly to Pinterest!
+            </p>
+            
+            <!-- Category Filters -->
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-3" id="categoryFilters">
+                <button onclick="setCategory('All')" class="category-btn active border border-brand-orange bg-brand-orange text-white px-5 py-2 rounded-full text-sm font-semibold transition">All Food</button>
+                <button onclick="setCategory('Pizza')" class="category-btn border border-stone-800 bg-stone-900/80 hover:border-brand-orange text-stone-300 px-5 py-2 rounded-full text-sm font-semibold transition"><i class="fa-solid fa-pizza-slice text-brand-yellow mr-1.5"></i> Pizza</button>
+                <button onclick="setCategory('Burger')" class="category-btn border border-stone-800 bg-stone-900/80 hover:border-brand-orange text-stone-300 px-5 py-2 rounded-full text-sm font-semibold transition"><i class="fa-solid fa-burger text-brand-orange mr-1.5"></i> Burger</button>
+                <button onclick="setCategory('Snacks')" class="category-btn border border-stone-800 bg-stone-900/80 hover:border-brand-orange text-stone-300 px-5 py-2 rounded-full text-sm font-semibold transition"><i class="fa-solid fa-hotdog text-amber-500 mr-1.5"></i> Snacks</button>
+                <button onclick="setCategory('Dessert')" class="category-btn border border-stone-800 bg-stone-900/80 hover:border-brand-orange text-stone-300 px-5 py-2 rounded-full text-sm font-semibold transition"><i class="fa-solid fa-ice-cream text-pink-400 mr-1.5"></i> Dessert</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Recipe Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow">
+        <div id="recipeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Dynamically populated via JavaScript -->
+        </div>
+
+        <!-- No Results State -->
+        <div id="noResults" class="hidden text-center py-20">
+            <i class="fa-solid fa-utensils text-6xl text-stone-700 mb-4"></i>
+            <h3 class="text-2xl font-bold text-stone-300">No Recipes Found!</h3>
+            <p class="text-stone-500 mt-2">Try searching with a different keyword or create a new recipe.</p>
+        </div>
+    </main>
+
+    <!-- Recipe Details Modal -->
+    <div id="detailModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-stone-900 border border-stone-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+            <!-- Close Button -->
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 bg-stone-800/80 hover:bg-stone-700 text-stone-300 w-10 h-10 rounded-full flex items-center justify-center z-20 transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Modal Body -->
+            <div id="modalContent">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Recipe Modal -->
+    <div id="addModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-stone-900 border border-stone-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative">
+            <button onclick="closeAddModal()" class="absolute top-5 right-5 bg-stone-800 text-stone-300 w-9 h-9 rounded-full flex items-center justify-center hover:bg-stone-700 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2 font-serif">
+                <i class="fa-solid fa-square-plus text-brand-orange"></i> Add New Recipe
+            </h2>
+
+            <form id="addRecipeForm" onsubmit="handleAddRecipe(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">Recipe Title *</label>
+                    <input type="text" id="formTitle" required placeholder="e.g. Classic Cheese Pepperoni Pizza" class="w-full bg-stone-800/90 border border-stone-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-orange">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">Category</label>
+                        <select id="formCategory" class="w-full bg-stone-800/90 border border-stone-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-orange">
+                            <option value="Pizza">Pizza</option>
+                            <option value="Burger">Burger</option>
+                            <option value="Snacks">Snacks</option>
+                            <option value="Dessert">Dessert</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">Prep Time</label>
+                        <input type="text" id="formTime" placeholder="e.g. 25 mins" class="w-full bg-stone-800/90 border border-stone-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-orange">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">Image URL</label>
+                    <input type="url" id="formImage" placeholder="https://images.unsplash.com/..." class="w-full bg-stone-800/90 border border-stone-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-orange">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">Ingredients (comma separated)</label>
+                    <textarea id="formIngredients" rows="2" placeholder="Flour, Mozzarella Cheese, Pizza Sauce, Pepperoni..." class="w-full bg-stone-800/90 border border-stone-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-orange"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">Instructions / Steps</label>
+                    <textarea id="formSteps" rows="3" placeholder="Step 1: Prepare dough...\nStep 2: Add toppings..." class="w-full bg-stone-800/90 border border-stone-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-orange"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-red text-white py-3 rounded-xl font-bold shadow-lg shadow-orange-600/30 hover:brightness-110 transition active:scale-95">
+                    Publish Recipe
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-stone-950 border-t border-stone-900 py-10 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center items-center gap-3 mb-4">
+                <div class="w-9 h-9 bg-brand-orange rounded-xl flex items-center justify-center text-white shadow-lg shadow-orange-500/20">
+                    <i class="fa-solid fa-utensils text-base"></i>
+                </div>
+                <span class="text-2xl font-extrabold font-serif bg-gradient-to-r from-brand-orange to-brand-yellow bg-clip-text text-transparent">Flikhata</span>
+            </div>
+            <p class="text-sm text-stone-400 max-w-md mx-auto mb-6">Your premier culinary hub for sharing mouthwatering pizza, burger, and fast food recipes directly onto Pinterest.</p>
+            
+            <div class="flex justify-center gap-6 text-stone-400 text-lg mb-6">
+                <a href="https://pinterest.com" target="_blank" class="hover:text-red-500 transition"><i class="fa-brands fa-pinterest"></i></a>
+                <a href="#" class="hover:text-brand-orange transition"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="hover:text-brand-orange transition"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="hover:text-brand-orange transition"><i class="fa-brands fa-x-twitter"></i></a>
+            </div>
+            
+            <p class="text-xs text-stone-600">&copy; 2026 Flikhata. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Data and Functions -->
+    <script>
+        // Initial Recipe Data
+        let recipes = [
+            {
+                id: 1,
+                title: "Authentic Pepperoni Pizza",
+                category: "Pizza",
+                time: "25 mins",
+                difficulty: "Easy",
+                rating: "4.9",
+                image: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=800&q=80",
+                description: "Classic Italian pepperoni pizza topped with rich tomato sauce, melted mozzarella, and crispy pepperoni slices.",
+                ingredients: ["250g Pizza dough", "1 cup Mozzarella cheese", "12 slices Pepperoni", "3 tbsp Tomato sauce", "1 tsp Oregano & Chili flakes"],
+                steps: "1. Preheat oven to 250°C (480°F).\n2. Roll out dough and spread tomato sauce evenly.\n3. Generously sprinkle mozzarella and layer pepperoni slices.\n4. Bake for 12-15 minutes until crust is golden and cheese is bubbly."
+            },
+            {
+                id: 2,
+                title: "Double Cheese Smash Burger",
+                category: "Burger",
+                time: "20 mins",
+                difficulty: "Medium",
+                rating: "4.8",
+                image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80",
+                description: "Juicy smashed beef patties with crispy edges, melted cheddar cheese, pickles, and signature house burger sauce.",
+                ingredients: ["2 Burger buns", "200g Ground beef", "2 Cheddar cheese slices", "2 tbsp Special burger sauce", "Caramelized onions & pickles"],
+                steps: "1. Divide beef into balls and smash thin on a searing hot skillet.\n2. Sear for 2 minutes, flip, and top with cheddar cheese.\n3. Toast brioche buns with butter, assemble with sauce, pickles, and patties."
+            },
+            {
+                id: 3,
+                title: "Cheesy Loaded BBQ Burger",
+                category: "Burger",
+                time: "30 mins",
+                difficulty: "Easy",
+                rating: "5.0",
+                image: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=800&q=80",
+                description: "A dream for cheese lovers! Thick flame-grilled patty smothered in liquid cheddar and tangy BBQ sauce.",
+                ingredients: ["Brioche bun", "Thick beef/chicken patty", "Melted cheese sauce", "Crispy bacon or lettuce", "BBQ glaze"],
+                steps: "1. Grill the patty to perfection.\n2. Melt extra cheese on top.\n3. Layer lettuce, patty, BBQ sauce, and extra cheese before serving."
+            },
+            {
+                id: 4,
+                title: "Smokey BBQ Chicken Pizza",
+                category: "Pizza",
+                time: "35 mins",
+                difficulty: "Medium",
+                rating: "4.7",
+                image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80",
+                description: "Tangy BBQ chicken breast pieces, red onions, bell peppers, and fresh cilantro on a crispy crust.",
+                ingredients: ["Pizza crust", "Grilled BBQ chicken cubes", "Red bell peppers & onions", "Mozzarella & Gouda cheese", "Fresh cilantro"],
+                steps: "1. Spread BBQ sauce over the pizza crust.\n2. Add chicken, diced peppers, and onions.\n3. Cover with cheese and bake at 220°C for 15 minutes."
+            },
+            {
+                id: 5,
+                title: "Peri Peri Crispy French Fries",
+                category: "Snacks",
+                time: "15 mins",
+                difficulty: "Easy",
+                rating: "4.6",
+                image: "https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=800&q=80",
+                description: "Golden, crispy french fries tossed in spicy and tangy Peri Peri seasoning.",
+                ingredients: ["3 Large potatoes", "2 tbsp Cornstarch", "1 tbsp Peri Peri seasoning", "Oil for deep frying"],
+                steps: "1. Cut potatoes into fries and soak in ice water.\n2. Dry completely, coat with cornstarch, and deep fry until crispy golden.\n3. Toss with Peri Peri spice while hot."
+            },
+            {
+                id: 6,
+                title: "Molten Chocolate Lava Cake",
+                category: "Dessert",
+                time: "20 mins",
+                difficulty: "Medium",
+                rating: "4.9",
+                image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80",
+                description: "Warm individual chocolate cakes with a luscious, gooey molten chocolate center.",
+                ingredients: ["100g Dark chocolate", "50g Unsalted butter", "2 Eggs", "30g Sugar", "20g All-purpose flour"],
+                steps: "1. Melt dark chocolate and butter together.\n2. Whisk eggs and sugar, then fold in chocolate and flour.\n3. Pour into ramekins and bake at 200°C for exactly 10 minutes."
+            }
+        ];
+
+        let currentCategory = 'All';
+
+        // Load recipes on page initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRecipes(recipes);
+        });
+
+        // Render Recipe Cards
+        function renderRecipes(items) {
+            const grid = document.getElementById('recipeGrid');
+            const noResults = document.getElementById('noResults');
+
+            if (items.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+            grid.innerHTML = items.map(recipe => {
+                // Construct Pinterest Share Link
+                const pageUrl = encodeURIComponent(window.location.href);
+                const imageUrl = encodeURIComponent(recipe.image);
+                const description = encodeURIComponent(`Check out this delicious ${recipe.title} recipe on Flikhata!`);
+                const pinterestUrl = `https://www.pinterest.com/pin/create/button/?url=${pageUrl}&media=${imageUrl}&description=${description}`;
+
+                return `
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300">
+                        <div>
+                            <!-- Image Container & Overlays -->
+                            <div class="relative overflow-hidden group h-56">
+                                <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent opacity-80"></div>
+                                
+                                <span class="absolute top-3 left-3 bg-stone-900/90 backdrop-blur-md text-brand-orange text-xs font-extrabold px-3 py-1 rounded-full border border-orange-500/30 tracking-wide">
+                                    ${recipe.category}
+                                </span>
+
+                                <!-- Pinterest Pin Button -->
+                                <a href="${pinterestUrl}" target="_blank" rel="noopener noreferrer" 
+                                   title="Pin on Pinterest"
+                                   class="pinterest-btn absolute top-3 right-3 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+                                    <i class="fa-brands fa-pinterest text-sm"></i>
+                                    <span>Pin</span>
+                                </a>
+
+                                <div class="absolute bottom-3 left-4 right-4 flex justify-between items-center text-xs text-stone-300 font-semibold">
+                                    <span><i class="fa-regular fa-clock text-brand-yellow mr-1"></i>${recipe.time}</span>
+                                    <span><i class="fa-solid fa-star text-brand-yellow mr-1"></i>${recipe.rating}</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white mb-2 line-clamp-1 hover:text-brand-orange transition cursor-pointer font-serif" onclick="openDetailModal(${recipe.id})">
+                                    ${recipe.title}
+                                </h3>
+                                <p class="text-stone-400 text-sm line-clamp-2 mb-4 leading-relaxed font-normal">
+                                    ${recipe.description}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Card Action Footer -->
+                        <div class="px-6 pb-6 pt-0 flex items-center justify-between gap-2 border-t border-stone-800/60 pt-4">
+                            <button onclick="openDetailModal(${recipe.id})" class="text-xs font-bold text-brand-orange hover:text-orange-400 flex items-center gap-1.5 transition">
+                                VIEW RECIPE <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+
+                            <a href="${pinterestUrl}" target="_blank" class="text-stone-400 hover:text-red-500 text-sm p-1 transition" title="Save to Pinterest">
+                                <i class="fa-brands fa-pinterest text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter Categories
+        function setCategory(cat) {
+            currentCategory = cat;
+            
+            const buttons = document.querySelectorAll('.category-btn');
+            buttons.forEach(btn => {
+                if (btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('All'))) {
+                    btn.className = "category-btn active border border-brand-orange bg-brand-orange text-white px-5 py-2 rounded-full text-sm font-semibold transition";
+                } else {
+                    btn.className = "category-btn border border-stone-800 bg-stone-900/80 hover:border-brand-orange text-stone-300 px-5 py-2 rounded-full text-sm font-semibold transition";
+                }
+            });
+
+            applyFilters();
+        }
+
+        // Apply Search and Category Filters
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filtered = recipes.filter(r => {
+                const matchesCategory = (currentCategory === 'All') || (r.category === currentCategory);
+                const matchesSearch = r.title.toLowerCase().includes(query) || r.description.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+
+            renderRecipes(filtered);
+        }
+
+        function filterRecipes() {
+            applyFilters();
+        }
+
+        function filterRecipesMobile() {
+            const query = document.getElementById('searchInputMobile').value.toLowerCase();
+            document.getElementById('searchInput').value = query;
+            applyFilters();
+        }
+
+        // Open Recipe Details Modal
+        function openDetailModal(id) {
+            const recipe = recipes.find(r => r.id === id);
+            if (!recipe) return;
+
+            const pageUrl = encodeURIComponent(window.location.href);
+            const imageUrl = encodeURIComponent(recipe.image);
+            const description = encodeURIComponent(`${recipe.title} - Flikhata Recipe Hub`);
+            const pinterestUrl = `https://www.pinterest.com/pin/create/button/?url=${pageUrl}&media=${imageUrl}&description=${description}`;
+
+            const ingredientsList = recipe.ingredients.map(ing => `
+                <li class="flex items-center gap-2 text-stone-300 text-sm">
+                    <i class="fa-solid fa-check text-brand-orange text-xs"></i> ${ing}
+                </li>`).join('');
+
+            const modalHtml = `
+                <div class="relative h-64 sm:h-80">
+                    <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-stone-900 via-stone-900/40 to-transparent"></div>
+                    <div class="absolute bottom-5 left-6 right-6">
+                        <span class="bg-brand-orange text-white text-xs px-3 py-1 rounded-md font-bold uppercase tracking-wider mb-2 inline-block">${recipe.category}</span>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold text-white font-serif">${recipe.title}</h2>
+                    </div>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-6">
+                    <!-- Recipe Quick Stats -->
+                    <div class="flex items-center justify-between bg-stone-800/60 rounded-2xl p-4 border border-stone-700/50 text-sm">
+                        <div class="text-center">
+                            <span class="block text-stone-400 text-xs uppercase font-semibold mb-0.5">Prep Time</span>
+                            <span class="font-bold text-white"><i class="fa-regular fa-clock text-brand-yellow mr-1"></i>${recipe.time}</span>
+                        </div>
+                        <div class="text-center border-x border-stone-700 px-4">
+                            <span class="block text-stone-400 text-xs uppercase font-semibold mb-0.5">Difficulty</span>
+                            <span class="font-bold text-white">${recipe.difficulty}</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="block text-stone-400 text-xs uppercase font-semibold mb-0.5">Rating</span>
+                            <span class="font-bold text-white"><i class="fa-solid fa-star text-brand-yellow mr-1"></i>${recipe.rating}</span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-stone-300 text-sm leading-relaxed">${recipe.description}</p>
+
+                    <!-- Ingredients -->
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2 font-serif">
+                            <i class="fa-solid fa-basket-shopping text-brand-orange"></i> Ingredients
+                        </h3>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-stone-800/30 p-5 rounded-2xl border border-stone-800">
+                            ${ingredientsList}
+                        </ul>
+                    </div>
+
+                    <!-- Preparation Steps -->
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2 font-serif">
+                            <i class="fa-solid fa-fire-burner text-brand-orange"></i> Instructions
+                        </h3>
+                        <div class="text-stone-300 text-sm whitespace-pre-line leading-relaxed bg-stone-800/30 p-5 rounded-2xl border border-stone-800">
+                            ${recipe.steps}
+                        </div>
+                    </div>
+
+                    <!-- Pinterest Call to Action -->
+                    <div class="pt-4 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <span class="text-xs text-stone-400">Love this recipe? Save it to your Pinterest board!</span>
+                        <a href="${pinterestUrl}" target="_blank" class="pinterest-btn text-white px-6 py-3 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg w-full sm:w-auto justify-center">
+                            <i class="fa-brands fa-pinterest text-lg"></i>
+                            <span>Save to Pinterest</span>
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalContent').innerHTML = modalHtml;
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        // Add Recipe Modal Open/Close
+        function openAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+
+        // Add New Recipe Handler
+        function handleAddRecipe(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('formTitle').value;
+            const category = document.getElementById('formCategory').value;
+            const time = document.getElementById('formTime').value || "20 mins";
+            const image = document.getElementById('formImage').value || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80";
+            const ingredientsRaw = document.getElementById('formIngredients').value;
+            const steps = document.getElementById('formSteps').value || "Mix all ingredients and cook appropriately.";
+
+            const ingredients = ingredientsRaw ? ingredientsRaw.split(',').map(i => i.trim()) : ["Fresh ingredients & spices"];
+
+            const newRecipe = {
+                id: recipes.length + 1,
+                title,
+                category,
+                time,
+                difficulty: "Easy",
+                rating: "5.0",
+                image,
+                description: `${title} - A mouthwatering dish crafted for food enthusiasts.`,
+                ingredients,
+                steps
+            };
+
+            recipes.unshift(newRecipe);
+            applyFilters();
+            closeAddModal();
+            document.getElementById('addRecipeForm').reset();
+        }
+    </script>
+</body>
+</html>
