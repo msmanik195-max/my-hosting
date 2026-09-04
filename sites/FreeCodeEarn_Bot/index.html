@@ -38,11 +38,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 #app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--tg-bg);position:relative;padding-bottom:88px}
 
 #loader{position:fixed;inset:0;background:var(--grad-primary);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff}
-#loader .logo-wrap{text-align:center;margin-bottom:32px}
-#loader .logo{font-size:38px;font-weight:800;font-family:'Poppins',sans-serif;letter-spacing:.5px;margin-bottom:4px}
-#loader .logo span{opacity:.85}
-#loader .tag{opacity:.85;font-size:14px;font-weight:500}
-#loader .loader-icon{width:20px;height:20px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot 0.75s linear infinite}
+#loader .loader-icon{width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot 0.75s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 
 .header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid #eaeef3;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,.05)}
@@ -299,15 +295,56 @@ button:disabled{opacity:.55;cursor:not-allowed}
 #maint p{color:var(--tg-text-sec);font-size:14px}
 
 .divider{height:1px;background:#eef2f7;margin:14px 0}
+
+/* Shop Styles */
+.shop-banner{width:100%;height:140px;border-radius:var(--radius-md);overflow:hidden;margin-bottom:12px;background:#eee;position:relative}
+.shop-banner img{width:100%;height:100%;object-fit:cover}
+.shop-cat-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:6px;scrollbar-width:none}
+.shop-cat-list::-webkit-scrollbar{display:none}
+.shop-cat-item{padding:8px 16px;background:#fff;border-radius:20px;font-size:12px;font-weight:700;white-space:nowrap;border:1.5px solid #e6ecf2;color:var(--tg-text);cursor:pointer;transition:all .2s}
+.shop-cat-item.active{background:var(--tg-blue);color:#fff;border-color:var(--tg-blue)}
+
+.product-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.product-card{background:#fff;border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .2s}
+.product-card:active{transform:scale(.98)}
+.product-card .p-img{width:100%;height:120px;object-fit:cover;background:#f3f4f6}
+.product-card .p-info{padding:10px}
+.product-card .p-title{font-size:13px;font-weight:700;color:var(--tg-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.product-card .p-price{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--tg-blue)}
+.product-card .btn-buy{margin-top:8px;width:100%;padding:6px;background:var(--grad-primary);color:#fff;border-radius:8px;font-size:11px;font-weight:700;text-transform:uppercase}
+
+.detail-content{padding-bottom:80px}
+.detail-img{width:100%;height:200px;object-fit:cover;border-radius:var(--radius-md);margin-bottom:12px;background:#f3f4f6}
+.detail-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.detail-price{font-family:'Poppins',sans-serif;font-size:20px;font-weight:800;color:var(--tg-blue);margin-bottom:10px}
+.detail-desc{font-size:14px;color:var(--tg-text-sec);line-height:1.6;margin-bottom:12px}
+.detail-footer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;padding:12px 16px;box-shadow:0 -4px 12px rgba(0,0,0,.1);display:flex;gap:10px;z-index:150}
+.btn-wishlist{width:50px;background:#fff0f0;color:#FF3B30;border:1.5px solid #ffcdd2;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:20px}
+.btn-order{flex:1;background:var(--grad-primary);color:#fff;padding:12px;border-radius:var(--radius-md);font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;box-shadow:var(--shadow-blue)}
+.btn-unlock-ad{flex:1;background:var(--grad-earn);color:#fff;padding:12px;border-radius:var(--radius-md);font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;box-shadow:0 4px 12px rgba(0,200,81,.25);margin-top:8px;width:100%}
+
+.file-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.file-stat-box{background:#fff;border-radius:10px;padding:10px 4px;text-align:center;box-shadow:var(--shadow-sm)}
+.file-stat-box .val{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:var(--tg-text)}
+.file-stat-box .lbl{font-size:9px;color:var(--tg-text-sec);margin-top:2px;text-transform:uppercase}
+.file-item{display:flex;align-items:center;gap:10px;padding:10px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:var(--shadow-sm)}
+.file-item img{width:50px;height:50px;border-radius:8px;object-fit:cover}
+.file-item .info{flex:1;min-width:0}
+.file-item .t{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-item .d{font-size:11px;color:var(--tg-text-sec);margin-top:2px;display:flex;align-items:center;gap:4px}
+.file-item .act{display:flex;align-items:center;gap:6px}
+.file-item .passcode-box{background:#f3f4f6;padding:6px 8px;border-radius:6px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;color:var(--tg-text)}
+.file-item .copy-btn{background:var(--tg-blue);color:#fff;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+
+.acc-menu-item{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border-radius:var(--radius-md);margin-bottom:8px;box-shadow:var(--shadow-sm)}
+.acc-menu-item .ic{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#FFF7ED,#FFEDD5);color:var(--tg-blue);display:flex;align-items:center;justify-content:center;font-size:20px}
+.acc-menu-item .t{flex:1;font-weight:600;font-size:14px}
+.acc-menu-item .arr{color:var(--tg-text-sec)}
 </style>
 </head>
 <body>
 
 <div id="loader">
-  <div class="logo-wrap">
-    <div class="logo">Earn <span>BD</span></div>
-    <div class="tag">উপার্জন করুন, প্রতিদিন</div>
-  </div>
   <div class="loader-icon"></div>
 </div>
 
@@ -333,9 +370,9 @@ button:disabled{opacity:.55;cursor:not-allowed}
     </button>
   </div>
 
+  <!-- HOME -->
   <div class="tab-panel active" id="tab-home">
     <div id="bannerNotif"></div>
-
     <div class="balance-card stagger">
       <div class="bg-circle c1"></div>
       <div class="bg-circle c2"></div>
@@ -351,7 +388,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
         <span>আজকের বিজ্ঞাপন: <span class="num" id="todayAds">0</span>/<span class="num" id="dailyLimit">0</span></span>
       </div>
     </div>
-
     <div class="qa-grid stagger">
       <button class="qa" onclick="openCheckin()">
         <div class="qa-icon"><i class="ph-duotone ph-calendar-check"></i></div>
@@ -365,12 +401,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
         <div class="qa-icon"><i class="ph-duotone ph-list-checks"></i></div>
         <span>টাস্ক</span>
       </button>
-      <button class="qa" onclick="switchTab('team')">
-        <div class="qa-icon"><i class="ph-duotone ph-users-three"></i></div>
-        <span>রেফার</span>
+      <button class="qa" onclick="switchTab('shop')">
+        <div class="qa-icon"><i class="ph-duotone ph-storefront"></i></div>
+        <span>শপ</span>
       </button>
     </div>
-
     <div class="stats-row stagger">
       <div class="stat-box">
         <div class="ic"><i class="ph-duotone ph-coins"></i></div>
@@ -387,23 +422,15 @@ button:disabled{opacity:.55;cursor:not-allowed}
         </div>
       </div>
     </div>
-
     <div class="sec-title"><i class="ph-duotone ph-calendar-dots"></i> দৈনিক চেক-ইন স্ট্রিক</div>
     <div class="card">
       <div class="streak" id="streakRow"></div>
     </div>
-
     <div class="sec-title"><i class="ph-duotone ph-television"></i> বিজ্ঞাপন দেখে উপার্জন</div>
     <div id="adsContainer"></div>
-
-    <div class="sec-title"><i class="ph-duotone ph-storefront"></i> দ্রুত পদক্ষেপ</div>
-    <div class="card" style="display:flex;gap:8px">
-      <button class="btn-primary" onclick="openMarket()">
-        <i class="ph-duotone ph-shopping-bag"></i> মার্কেট
-      </button>
-    </div>
   </div>
 
+  <!-- TEAM -->
   <div class="tab-panel" id="tab-team">
     <div class="card">
       <div style="font-weight:700;display:flex;align-items:center;gap:8px;font-size:15px">
@@ -418,7 +445,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
         <i class="ph-duotone ph-telegram-logo"></i> Telegram এ শেয়ার করুন
       </button>
     </div>
-
     <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
       <div class="stat-box" style="flex-direction:column;text-align:center;gap:6px">
         <div class="ic"><i class="ph-duotone ph-users"></i></div>
@@ -436,7 +462,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
         <div class="val num"><span class="cs">$</span><span id="tRefBonus">0</span></div>
       </div>
     </div>
-
     <div class="tier-card">
       <div style="font-weight:700;display:flex;align-items:center;gap:7px;font-size:14px">
         <i class="ph-duotone ph-medal" style="color:var(--tg-gold);font-size:20px"></i>
@@ -467,11 +492,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
         </div>
       </div>
     </div>
-
     <div class="sec-title"><i class="ph-duotone ph-user-list"></i> আপনার রেফারেলরা</div>
     <div id="refList"></div>
   </div>
 
+  <!-- TASKS -->
   <div class="tab-panel" id="tab-tasks">
     <div class="filter-pills" id="taskFilters">
       <div class="pill active" data-f="all">সব</div>
@@ -483,6 +508,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div id="taskList"></div>
   </div>
 
+  <!-- BOARD -->
   <div class="tab-panel" id="tab-board">
     <div class="sec-title" style="justify-content:center;font-size:15px;margin-top:6px">
       <i class="ph-duotone ph-trophy" style="color:var(--tg-gold);font-size:22px"></i>
@@ -491,7 +517,59 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div class="podium" id="podium"></div>
     <div id="lbList"></div>
   </div>
+  
+  <!-- SHOP -->
+  <div class="tab-panel" id="tab-shop">
+    <div id="shopBanners"></div>
+    <div class="shop-cat-list" id="shopCategories"></div>
+    <div id="shopProducts" class="product-grid"></div>
+  </div>
 
+  <!-- ACCOUNT -->
+  <div class="tab-panel" id="tab-account">
+    <div class="balance-card">
+      <div class="bg-circle c1"></div>
+      <div class="bg-circle c2"></div>
+      <div class="bal-label">অ্যাকাউন্ট ব্যালেন্স</div>
+      <div class="amount num"><span class="cs">$</span><span id="accBalance">0.0000</span></div>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <div class="acc-menu-item" onclick="switchTab('myfiles')">
+        <div class="ic"><i class="ph-duotone ph-folders"></i></div>
+        <div class="t">মাই ফাইল</div>
+        <div class="arr"><i class="ph-duotone ph-caret-right"></i></div>
+      </div>
+      <div class="acc-menu-item" onclick="switchTab('wallet')">
+        <div class="ic"><i class="ph-duotone ph-wallet"></i></div>
+        <div class="t">ওয়ালেট</div>
+        <div class="arr"><i class="ph-duotone ph-caret-right"></i></div>
+      </div>
+      <div class="acc-menu-item" onclick="switchTab('team')">
+        <div class="ic"><i class="ph-duotone ph-users-three"></i></div>
+        <div class="t">রেফার</div>
+        <div class="arr"><i class="ph-duotone ph-caret-right"></i></div>
+      </div>
+      <div class="acc-menu-item" onclick="switchTab('support')">
+        <div class="ic"><i class="ph-duotone ph-headset"></i></div>
+        <div class="t">সাপোর্ট</div>
+        <div class="arr"><i class="ph-duotone ph-caret-right"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY FILES -->
+  <div class="tab-panel" id="tab-myfiles">
+    <div class="sec-title"><i class="ph-duotone ph-folders"></i> আমার ফাইল</div>
+    <div class="file-stat-grid">
+      <div class="file-stat-box"><div class="val" id="fTotal">0</div><div class="lbl">Total</div></div>
+      <div class="file-stat-box"><div class="val" id="fApproved">0</div><div class="lbl">Approve</div></div>
+      <div class="file-stat-box"><div class="val" id="fPending">0</div><div class="lbl">Pending</div></div>
+      <div class="file-stat-box"><div class="val" id="fRejected">0</div><div class="lbl">Reject</div></div>
+    </div>
+    <div id="myFilesList"></div>
+  </div>
+
+  <!-- WALLET -->
   <div class="tab-panel" id="tab-wallet">
     <div class="balance-card">
       <div class="bg-circle c1"></div>
@@ -503,7 +581,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
         মোট উইথড্র: <span class="cs">$</span><span class="num" id="wTotal">0.00</span>
       </div>
     </div>
-
     <div class="card" style="margin-top:14px">
       <div style="font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;font-size:15px">
         <i class="ph-duotone ph-money" style="color:var(--tg-accent);font-size:22px"></i>
@@ -528,7 +605,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
         <i class="ph-duotone ph-paper-plane-tilt"></i> উইথড্র অনুরোধ পাঠান
       </button>
     </div>
-
     <div class="sec-title"><i class="ph-duotone ph-clock-counter-clockwise"></i> লেনদেন ইতিহাস</div>
     <div class="filter-pills" id="txFilters">
       <div class="pill active" data-f="all">সব</div>
@@ -538,30 +614,13 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div id="txList"></div>
   </div>
 
-  <div class="tab-panel" id="tab-account">
-    <div class="balance-card">
-      <div class="bg-circle c1"></div>
-      <div class="bg-circle c2"></div>
-      <div class="bal-label">অ্যাকাউন্ট ব্যালেন্স</div>
-      <div class="amount num"><span class="cs">$</span><span id="accBalance">0.0000</span></div>
-    </div>
-    <div class="card" style="margin-top:14px;">
-      <div class="sec" style="margin-top:0"><i class="ph-duotone ph-user-circle"></i> প্রোফাইল তথ্য</div>
-      <div class="set-row" style="border:none;padding:8px 0">
-        <div class="ic"><i class="ph-duotone ph-user"></i></div>
-        <div><div class="lbl">নাম</div><div class="hint" id="accName">User</div></div>
-      </div>
-      <div class="set-row" style="border:none;padding:8px 0">
-        <div class="ic"><i class="ph-duotone ph-hash"></i></div>
-        <div><div class="lbl">ইউজার আইডি</div><div class="hint num" id="accUid">--</div></div>
-      </div>
-      <div class="set-row" style="border:none;padding:8px 0">
-        <div class="ic"><i class="ph-duotone ph-medal"></i></div>
-        <div><div class="lbl">ভিআইপি স্ট্যাটাস</div><div class="hint" id="accVip">Bronze</div></div>
-      </div>
-    </div>
+  <!-- SUPPORT -->
+  <div class="tab-panel" id="tab-support">
+    <div class="sec-title"><i class="ph-duotone ph-headset"></i> সাপোর্ট</div>
+    <div id="supportList"></div>
   </div>
 
+  <!-- BOTTOM NAV -->
   <div class="botnav">
     <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
       <div class="nav-icon"><i class="ph-duotone ph-house"></i></div>হোম
@@ -575,8 +634,8 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <button class="nav-item" data-tab="board" onclick="switchTab('board')">
       <div class="nav-icon"><i class="ph-duotone ph-trophy"></i></div>বোর্ড
     </button>
-    <button class="nav-item" data-tab="wallet" onclick="switchTab('wallet')">
-      <div class="nav-icon"><i class="ph-duotone ph-wallet"></i></div>ওয়ালেট
+    <button class="nav-item" data-tab="shop" onclick="switchTab('shop')">
+      <div class="nav-icon"><i class="ph-duotone ph-storefront"></i></div>শপ
     </button>
     <button class="nav-item" data-tab="account" onclick="switchTab('account')">
       <div class="nav-icon"><i class="ph-duotone ph-user-circle"></i></div>Account
@@ -584,6 +643,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
   </div>
 </div>
 
+<!-- Modals -->
 <div class="modal" id="spinModal">
   <div class="modal-body">
     <div class="modal-head">
@@ -595,11 +655,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <button class="btn-primary" id="spinBtn" onclick="doSpin()">
       <i class="ph-duotone ph-arrow-clockwise"></i> স্পিন করুন
     </button>
-    <div style="text-align:center;margin-top:12px">
-      <button onclick="closeModal('spinModal');openMarket()" style="color:var(--tg-blue);font-weight:700;display:inline-flex;align-items:center;gap:4px">
-        <i class="ph-duotone ph-shopping-bag" style="font-size:16px"></i> কার্ড কিনুন
-      </button>
-    </div>
   </div>
 </div>
 
@@ -637,6 +692,10 @@ button:disabled{opacity:.55;cursor:not-allowed}
   </div>
 </div>
 
+<div class="modal" id="productModal">
+  <div class="modal-body detail-content" id="productModalBody"></div>
+</div>
+
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
@@ -655,11 +714,12 @@ const db = firebase.database();
 const fs = firebase.firestore();
 
 const adNetworks = [
-  {key: 'monetag', name: 'Monetag'},
-  {key: 'onclicka', name: 'OnClickA'},
-  {key: 'adexora', name: 'Adexora'},
-  {key: 'adsgram', name: 'AdsGram'},
-  {key: 'gigapub', name: 'GigaPub'}
+  {key: 'monetag', name: 'Monetag', defZone: '11718202'},
+  {key: 'onclicka', name: 'OnClickA', defZone: ''},
+  {key: 'adexora', name: 'Adexora', defZone: '2188'},
+  {key: 'adsgram', name: 'AdsGram', defZone: ''},
+  {key: 'gigapub', name: 'GigaPub', defZone: '8058'},
+  {key: 'adscendium', name: 'Adscendium', defZone: ''}
 ];
 
 let TGUser = null, currentUser = null, appSettings = {}, withdrawMethods = [], selectedMethod = null;
@@ -667,6 +727,8 @@ let tasks = [], notifications = [], unreadCount = 0, currentTaskFilter='all', cu
 let transactionsCache = [];
 let _dailyCardDone = false; 
 let currencySym = '$';
+const loadedScripts = {};
+let shopProducts = [], shopCategories = [], shopBanners = [], myOrders = [], supportLinks = [];
 
 const $=id=>document.getElementById(id);
 function capitalize(s){return s.charAt(0).toUpperCase()+s.slice(1);}
@@ -719,6 +781,94 @@ function updateCurrencyUI(){
   document.querySelectorAll('.cs').forEach(e=>e.textContent=currencySym);
 }
 
+function loadScript(url, id) {
+  return new Promise((resolve, reject) => {
+    if (loadedScripts[id]) {
+      resolve();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = url;
+    script.id = id;
+    script.async = true;
+    script.onload = () => {
+      loadedScripts[id] = true;
+      resolve();
+    };
+    script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+    document.head.appendChild(script);
+  });
+}
+
+async function showAd(networkKey) {
+  const zoneId = String(appSettings[networkKey + 'ZoneId'] || adNetworks.find(n=>n.key===networkKey)?.defZone || '');
+  if (!zoneId || zoneId === '0') throw new Error('No Zone ID configured');
+
+  try {
+    if (networkKey === 'monetag' || networkKey === 'onclicka') {
+      const scriptId = `sdk_${networkKey}_${zoneId}`;
+      if (!loadedScripts[scriptId]) {
+        const url = networkKey === 'monetag' ? '//libtl.com/sdk.js' : '//lock-cloud.com/sdk.js';
+        const s = document.createElement('script');
+        s.src = url;
+        s.id = scriptId;
+        s.setAttribute('data-zone', zoneId);
+        s.setAttribute('data-sdk', `show_${zoneId}`);
+        s.setAttribute('data-cfasync', 'false');
+        s.async = true;
+        document.head.appendChild(s);
+        await new Promise(res => { s.onload = res; s.onerror = res; });
+        loadedScripts[scriptId] = true;
+      }
+      const showFn = window[`show_${zoneId}`];
+      if (typeof showFn === 'function') {
+        await showFn();
+      } else {
+        throw new Error('Ad function not found');
+      }
+    }
+    else if (networkKey === 'gigapub') {
+      await loadScript(`https://ad.gigapub.tech/script?id=${zoneId}`, 'sdk_gigapub');
+      if (typeof window.showGiga === 'function') {
+        await window.showGiga();
+      } else {
+        throw new Error('GigaPub SDK not loaded');
+      }
+    }
+    else if (networkKey === 'adexora') {
+      await loadScript(`https://adexora.com/cdn/ads.js?id=${zoneId}`, 'sdk_adexora');
+      if (typeof window.showAdexora === 'function') {
+        await window.showAdexora();
+      } else {
+        throw new Error('Adexora SDK not loaded');
+      }
+    }
+    else if (networkKey === 'adsgram') {
+      await loadScript('https://sad.adsgram.ai/js/sad.js', 'sdk_adsgram');
+      if (window.Adsgram) {
+        const ad = window.Adsgram.init({ blockId: zoneId });
+        await ad.show();
+      } else {
+        throw new Error('AdsGram SDK not loaded');
+      }
+    }
+    else if (networkKey === 'adscendium') {
+      await loadScript('https://cdn.adscendmedia.com/adscend.js', 'sdk_adscendium');
+      if (window.ASCRD) {
+        await new Promise((resolve, reject) => {
+          window.ASCRD.showRewardedAd(zoneId, resolve, reject);
+        });
+      } else {
+        throw new Error('Adscendium SDK not loaded');
+      }
+    }
+    return true;
+  } catch (e) {
+    console.warn(`${networkKey} ad error or dismissed:`, e);
+    throw e;
+  }
+}
+
 async function init(){
   try{
     const tg=window.Telegram?.WebApp;
@@ -750,7 +900,6 @@ async function init(){
         lastCardDate:'',spinCards:0,completedTasks:{},banned:false,
         createdAt:Date.now()
       };
-      // Initialize ad states dynamically
       adNetworks.forEach(n => {
         newUser[n.key+'Ads'] = 0;
         newUser['last'+capitalize(n.key)+'Date'] = '';
@@ -778,6 +927,7 @@ async function init(){
       if(appSettings.maintenance){$('maint').style.display='flex';}
       else{$('maint').style.display='none';}
       renderAdsSection();
+      renderAll(); 
     });
 
     db.ref('notifications').orderByChild('timestamp').limitToLast(100).on('value',snap=>{
@@ -804,6 +954,17 @@ async function init(){
       const arr=[];snap.forEach(c=>arr.push({id:c.key,_w:true,...c.val()}));
       window._withdrawals=arr.reverse();
       renderTransactions();
+    });
+
+    // Listeners for Shop & Support
+    db.ref('banners').on('value', s=>{ shopBanners=[]; s.forEach(c=>shopBanners.push({id:c.key,...c.val()})); renderShop(); });
+    db.ref('categories').on('value', s=>{ shopCategories=[]; s.forEach(c=>shopCategories.push({id:c.key,...c.val()})); renderShop(); });
+    db.ref('products').on('value', s=>{ shopProducts=[]; s.forEach(c=>{const v=c.val(); if(v.active) shopProducts.push({id:c.key,...v})}); renderShop(); });
+    db.ref('supports').on('value', s=>{ supportLinks=[]; s.forEach(c=>supportLinks.push({id:c.key,...c.val()})); renderSupport(); });
+    
+    fs.collection('orders').where('userId','==',uid).onSnapshot(s=>{
+      myOrders=[]; s.forEach(d=>myOrders.push({id:d.id,...d.data()}));
+      renderMyFiles();
     });
 
     $('loader').style.display='none';
@@ -856,10 +1017,6 @@ function renderAll(){
   badge.querySelector('i').style.color=vip.color;
   $('vipLabel').textContent=vip.label;
   
-  if($('accName'))$('accName').textContent=currentUser.name||'User';
-  if($('accUid'))$('accUid').textContent=currentUser.uid;
-  if($('accVip'))$('accVip').textContent=vip.label;
-
   $('totalEarned').textContent=newEarned.toFixed(2);
   $('refCount').textContent=currentUser.referralCount||0;
 
@@ -868,6 +1025,9 @@ function renderAll(){
   renderTeam();
   renderLeaderboard();
   renderWalletTab();
+  renderShop();
+  renderMyFiles();
+  renderSupport();
 }
 
 function renderAdsSection(){
@@ -877,13 +1037,15 @@ function renderAdsSection(){
   let totalLimit = 0;
   
   adNetworks.forEach(net=>{
-    const isActive = appSettings[net.key+'Active'];
-    const lim = parseInt(appSettings[net.key+'Limit']||0);
+    const isActive = appSettings[net.key+'Active'] === true;
+    let lim = parseInt(appSettings[net.key+'Limit']);
+    if(isNaN(lim) || lim < 1) lim = 10; // Default limit to 10 if invalid or 0
     
-    if(!isActive || lim<=0) return; // Skip if inactive or limit is 0
+    if(!isActive) return; 
     
+    const displayName = appSettings[net.key+'DisplayName'] || net.name;
     const todayAds = currentUser['last'+capitalize(net.key)+'Date'] === today ? (currentUser[net.key+'Ads']||0) : 0;
-    const earn = parseFloat(appSettings[net.key+'PerAd']||0).toFixed(4);
+    const earn = parseFloat(appSettings[net.key+'PerAd']||0.005).toFixed(4);
     const isDone = todayAds >= lim;
     
     totalTodayAds += todayAds;
@@ -894,7 +1056,7 @@ function renderAdsSection(){
       <div class="ad-head">
         <div class="ad-ic"><i class="ph-duotone ph-play-circle"></i></div>
         <div class="ad-info">
-          <div class="title">${net.name} Ads</div>
+          <div class="title">${displayName}</div>
           <div class="desc">প্রতি বিজ্ঞাপনে +${currencySym}${earn} উপার্জন করুন</div>
         </div>
       </div>
@@ -916,27 +1078,33 @@ function renderAdsSection(){
   $('adsContainer').innerHTML=html || '<div class="empty"><i class="ph-duotone ph-television"></i><div class="et">এখন কোন বিজ্ঞাপন নেই</div></div>';
 }
 
-function watchAd(network){
+async function watchAd(network){
   const today=getBDDate();
-  const lim=parseInt(appSettings[network+'Limit']||10);
+  let lim=parseInt(appSettings[network+'Limit']);
+  if(isNaN(lim) || lim < 1) lim = 10;
   const todayAds=currentUser['last'+capitalize(network)+'Date']===today?(currentUser[network+'Ads']||0):0;
   if(todayAds>=lim){showToast('আজকের সীমা পূর্ণ হয়েছে','warn');return;}
 
   const btn=$('watchAdBtn_'+network);
   btn.disabled=true;
-  btn.innerHTML='<i class="ph-duotone ph-spinner-gap"></i> লোড হচ্ছে...';
+  btn.innerHTML='<i class="ph-duotone ph-spinner-gap"></i> অ্যাড লোড হচ্ছে...';
 
-  // Simulate Ad Network SDK Call
-  setTimeout(()=>{
-    creditAdEarning(network);
-  }, 2500);
+  try {
+    await showAd(network);
+    await creditAdEarning(network);
+  } catch (error) {
+    showToast('বিজ্ঞাপন বন্ধ করা হয়েছে বা লোড ব্যর্থ হয়েছে', 'warn');
+    btn.disabled=false;
+    btn.innerHTML='<i class="ph-duotone ph-play-circle"></i> বিজ্ঞাপন দেখুন';
+  }
 }
 
 async function creditAdEarning(network){
   const uid=String(TGUser.id);
+  let lim=parseInt(appSettings[network+'Limit']);
+  if(isNaN(lim) || lim < 1) lim = 10;
   const earn=parseFloat(appSettings[network+'PerAd']||0.005);
   const today=getBDDate();
-  const lim=parseInt(appSettings[network+'Limit']||10);
   let credited=false;
   const dateKey='last'+capitalize(network)+'Date';
   const adsKey=network+'Ads';
@@ -1161,11 +1329,133 @@ function renderTransactions(){
   }).join('');
 }
 
+// Shop Logic
+function renderShop(){
+  let bnHtml = shopBanners.map(b=>`<div class="shop-banner" onclick="window.open('${b.url||'#'}','_blank')"><img src="${b.img}" alt="Banner"></div>`).join('');
+  $('shopBanners').innerHTML = bnHtml || '';
+  
+  let catHtml = `<div class="shop-cat-item active" onclick="filterProducts('all')">All</div>`;
+  catHtml += shopCategories.map(c=>`<div class="shop-cat-item" onclick="filterProducts('${c.id}')">${c.name}</div>`).join('');
+  $('shopCategories').innerHTML = catHtml;
+  
+  let pHtml = shopProducts.map(p=>`
+    <div class="product-card" onclick="openProduct('${p.id}')">
+      <img src="${p.img}" class="p-img" alt="${p.title}">
+      <div class="p-info">
+        <div class="p-title">${p.title}</div>
+        <div class="p-price">${currencySym}${p.price}</div>
+        <button class="btn-buy" onclick="event.stopPropagation(); openProduct('${p.id}')">Buy Now</button>
+      </div>
+    </div>`).join('');
+  $('shopProducts').innerHTML = pHtml || '<div class="empty" style="grid-column:1/-1"><div class="et">কোন প্রোডাক্ট নেই</div></div>';
+}
+
+function openProduct(id){
+  const p = shopProducts.find(x=>x.id===id); if(!p) return;
+  let extraHtml = '';
+  if(p.unlockAds){
+    extraHtml = `<button class="btn-unlock-ad" onclick="unlockByAd('${p.id}')"><i class="ph-duotone ph-play-circle"></i> Watch ${p.adLimit} Ads to Unlock</button>`;
+  }
+  $('productModalBody').innerHTML = `
+    <div class="modal-head">
+      <div class="t"><i class="ph-duotone ph-shopping-bag"></i> Product Details</div>
+      <button class="x" onclick="closeModal('productModal')"><i class="ph-duotone ph-x"></i></button>
+    </div>
+    <img src="${p.img}" class="detail-img" alt="${p.title}">
+    <div class="detail-title">${p.title}</div>
+    <div class="detail-price">${currencySym}${p.price}</div>
+    <div class="detail-desc">${p.desc}</div>
+    ${extraHtml}
+    <div class="detail-footer" style="position:sticky;bottom:0;left:0;transform:none;width:100%;max-width:none;">
+      <button class="btn-wishlist"><i class="ph-duotone ph-heart"></i></button>
+      <button class="btn-order" onclick="orderProduct('${p.id}', ${p.price}, ${p.approval||false})"><i class="ph-duotone ph-shopping-cart"></i> Order Now</button>
+    </div>
+  `;
+  openModal('productModal');
+}
+
+async function orderProduct(id, price, approval){
+  if((currentUser.balance||0) < price){ showToast('পর্যাপ্ত ব্যালেন্স নেই','danger'); return; }
+  const uid=String(TGUser.id);
+  await db.ref('users/'+uid).transaction(u=>{ if(!u||(u.balance||0)<price)return; u.balance=parseFloat(((u.balance||0)-price).toFixed(4)); return u; });
+  
+  const orderData = {
+    userId: uid, productId: id, productName: shopProducts.find(x=>x.id===id)?.title || '', 
+    price: price, status: approval ? 'pending' : 'approved', 
+    orderedAt: Date.now()
+  };
+  await fs.collection('orders').add(orderData);
+  showToast(approval ? 'অর্ডার সফল! এডমিন এপ্রুভ করলে ফাইল পাবেন' : 'অর্ডার সফল! ফাইল আপনার লাইব্রেরিতে যোগ হয়েছে', 'success');
+  closeModal('productModal');
+  switchTab('myfiles');
+}
+
+async function unlockByAd(productId){
+  const p = shopProducts.find(x=>x.id===productId); if(!p) return;
+  showToast(`${p.adLimit} টি অ্যাড দেখতে হবে...`, 'info');
+  try {
+    await showAd(p.adNetwork);
+    let order = myOrders.find(o=>o.productId===productId);
+    if(!order){
+      await fs.collection('orders').add({ userId: String(TGUser.id), productId, status:'approved', orderedAt:Date.now() });
+      showToast('প্রোডাক্ট আনলক হয়েছে!', 'success');
+      closeModal('productModal');
+    }
+  } catch(e){ showToast('অ্যাড লোড ব্যর্থ','danger'); }
+}
+
+// My Files Logic
+function renderMyFiles(){
+  const stats = { total: myOrders.length, approved: 0, pending: 0, rejected: 0 };
+  myOrders.forEach(o => stats[o.status]++);
+  $('fTotal').textContent = stats.total;
+  $('fApproved').textContent = stats.approved;
+  $('fPending').textContent = stats.pending;
+  $('fRejected').textContent = stats.rejected;
+
+  let html = myOrders.map(o=>{
+    const p = shopProducts.find(x=>x.id===o.productId) || {img:'', title:o.productName};
+    let actionHtml = '';
+    if(o.status === 'approved'){
+      const content = p.content || 'N/A';
+      actionHtml = `
+        <div class="passcode-box">${content}</div>
+        <button class="copy-btn" onclick="copyText('${content}')"><i class="ph-duotone ph-copy"></i></button>`;
+    } else {
+      actionHtml = `<span class="badge ${o.status}">${o.status}</span>`;
+    }
+    return `
+    <div class="file-item">
+      <img src="${p.img}">
+      <div class="info">
+        <div class="t">${p.title}</div>
+        <div class="d">${new Date(o.orderedAt).toLocaleDateString()}</div>
+      </div>
+      <div class="act">${actionHtml}</div>
+    </div>`;
+  }).join('');
+  $('myFilesList').innerHTML = html || '<div class="empty"><div class="et">কোন ফাইল নেই</div></div>';
+}
+
+// Support Logic
+function renderSupport(){
+  let html = supportLinks.map(s=>`
+    <div class="acc-menu-item" onclick="window.open('${s.url}','_blank')">
+      <div class="ic"><img src="${s.logo}" style="width:24px;height:24px;border-radius:6px"></div>
+      <div class="t">${s.name}</div>
+      <div class="arr"><i class="ph-duotone ph-arrow-up-right"></i></div>
+    </div>
+  `).join('');
+  $('supportList').innerHTML = html || '<div class="empty"><div class="et">কোন সাপোর্ট নেই</div></div>';
+}
+
+function copyText(t){ navigator.clipboard.writeText(t).then(()=>showToast('কপি হয়েছে','success')); }
+
 function switchTab(name){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   $('tab-'+name).classList.add('active');
-  document.querySelector(`.nav-item[data-tab="${name}"]`).classList.add('active');
+  document.querySelector(`.nav-item[data-tab="${name}"]`)?.classList.add('active');
   window.scrollTo(0,0);
   if(name==='board'){_lbTimer=null;_lbFirstLoad=false;renderLeaderboard();}
 }
