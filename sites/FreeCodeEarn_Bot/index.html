@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Earn BD — উপার্জন করুন, প্রতিদিন</title>
+<title>Earn BD</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -37,8 +37,14 @@ button:disabled{opacity:.55;cursor:not-allowed}
 
 #app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--tg-bg);position:relative;padding-bottom:88px}
 
-#loader{position:fixed;inset:0;background:var(--grad-primary);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff}
-#loader .loader-icon{width:40px;height:40px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:rot 0.75s linear infinite}
+#loader{position:fixed;inset:0;background:var(--tg-bg);display:flex;align-items:center;justify-content:center;z-index:9999}
+#loader .loader-icon{
+  width:48px;height:48px;border-radius:50%;
+  background: repeating-conic-gradient(#F97316 0deg 25deg, transparent 25deg 50deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 5px));
+  animation: rot 0.8s linear infinite;
+}
 @keyframes rot{to{transform:rotate(360deg)}}
 
 .header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid #eaeef3;position:sticky;top:0;z-index:50;box-shadow:0 1px 8px rgba(0,0,0,.05)}
@@ -159,7 +165,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
   filter:drop-shadow(0 1px 3px rgba(249,115,22,.35));
   transform:scale(1.12);
 }
-.nav-dot{display:none;}
 
 .ref-link{background:#f3f6f9;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;margin-top:10px;border:1px solid #e8ecf0}
 .ref-link input{flex:1;border:none;background:transparent;font-family:'Poppins',sans-serif;font-size:12px;color:var(--tg-text);outline:none}
@@ -294,8 +299,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
 #maint h2{font-size:20px;margin-bottom:8px}
 #maint p{color:var(--tg-text-sec);font-size:14px}
 
-.divider{height:1px;background:#eef2f7;margin:14px 0}
-
 /* Shop Styles */
 .shop-banner{width:100%;height:140px;border-radius:var(--radius-md);overflow:hidden;margin-bottom:12px;background:#eee;position:relative}
 .shop-banner img{width:100%;height:100%;object-fit:cover}
@@ -340,6 +343,13 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .acc-menu-item .ic{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#FFF7ED,#FFEDD5);color:var(--tg-blue);display:flex;align-items:center;justify-content:center;font-size:20px}
 .acc-menu-item .t{flex:1;font-weight:600;font-size:14px}
 .acc-menu-item .arr{color:var(--tg-text-sec)}
+
+.profile-card{background:var(--grad-primary);color:#fff;border-radius:var(--radius-xl);padding:20px;position:relative;overflow:hidden;box-shadow:var(--shadow-blue);text-align:center}
+.profile-card .avatar{width:80px;height:80px;border-radius:50%;background:#fff;margin:0 auto 10px;overflow:hidden;border:3px solid rgba(255,255,255,.3)}
+.profile-card .avatar img{width:100%;height:100%;object-fit:cover}
+.profile-card .p-name{font-size:18px;font-weight:700;margin-bottom:2px}
+.profile-card .p-uid{font-size:12px;opacity:.85;font-family:'Poppins',sans-serif}
+.profile-card .p-username{font-size:13px;opacity:.9;margin-top:4px}
 </style>
 </head>
 <body>
@@ -370,7 +380,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
     </button>
   </div>
 
-  <!-- HOME -->
   <div class="tab-panel active" id="tab-home">
     <div id="bannerNotif"></div>
     <div class="balance-card stagger">
@@ -382,7 +391,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
         <span id="vipLabel">Bronze</span>
       </div>
       <div class="bal-label">আপনার মোট ব্যালেন্স</div>
-      <div class="amount num"><span class="cs">$</span><span id="balance">0.0000</span></div>
+      <div class="amount num"><span class="cs">$</span><span id="balance">0</span></div>
       <div class="bal-sub">
         <i class="ph-duotone ph-television"></i>
         <span>আজকের বিজ্ঞাপন: <span class="num" id="todayAds">0</span>/<span class="num" id="dailyLimit">0</span></span>
@@ -411,7 +420,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
         <div class="ic"><i class="ph-duotone ph-coins"></i></div>
         <div>
           <div class="lbl">মোট আয়</div>
-          <div class="val num"><span class="cs">$</span><span id="totalEarned">0.00</span></div>
+          <div class="val num"><span class="cs">$</span><span id="totalEarned">0</span></div>
         </div>
       </div>
       <div class="stat-box">
@@ -430,7 +439,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div id="adsContainer"></div>
   </div>
 
-  <!-- TEAM -->
   <div class="tab-panel" id="tab-team">
     <div class="card">
       <div style="font-weight:700;display:flex;align-items:center;gap:8px;font-size:15px">
@@ -496,7 +504,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div id="refList"></div>
   </div>
 
-  <!-- TASKS -->
   <div class="tab-panel" id="tab-tasks">
     <div class="filter-pills" id="taskFilters">
       <div class="pill active" data-f="all">সব</div>
@@ -508,7 +515,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div id="taskList"></div>
   </div>
 
-  <!-- BOARD -->
   <div class="tab-panel" id="tab-board">
     <div class="sec-title" style="justify-content:center;font-size:15px;margin-top:6px">
       <i class="ph-duotone ph-trophy" style="color:var(--tg-gold);font-size:22px"></i>
@@ -518,20 +524,21 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div id="lbList"></div>
   </div>
   
-  <!-- SHOP -->
   <div class="tab-panel" id="tab-shop">
     <div id="shopBanners"></div>
     <div class="shop-cat-list" id="shopCategories"></div>
     <div id="shopProducts" class="product-grid"></div>
   </div>
 
-  <!-- ACCOUNT -->
   <div class="tab-panel" id="tab-account">
-    <div class="balance-card">
+    <div class="profile-card stagger">
       <div class="bg-circle c1"></div>
       <div class="bg-circle c2"></div>
-      <div class="bal-label">অ্যাকাউন্ট ব্যালেন্স</div>
-      <div class="amount num"><span class="cs">$</span><span id="accBalance">0.0000</span></div>
+      <div class="avatar" id="accProfileAvatar"><i class="ph-duotone ph-user" style="color:var(--tg-blue);font-size:32px"></i></div>
+      <div class="p-name" id="accProfileName">User</div>
+      <div class="p-uid">ID: <span id="accProfileUid">--</span></div>
+      <div class="p-username">@<span id="accProfileUsername">N/A</span></div>
+      <div style="margin-top:12px;font-size:20px;font-weight:800;font-family:'Poppins',sans-serif"><span class="cs">$</span><span id="accProfileBalance">0</span></div>
     </div>
     <div class="card" style="margin-top:14px;">
       <div class="acc-menu-item" onclick="switchTab('myfiles')">
@@ -557,7 +564,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
     </div>
   </div>
 
-  <!-- MY FILES -->
   <div class="tab-panel" id="tab-myfiles">
     <div class="sec-title"><i class="ph-duotone ph-folders"></i> আমার ফাইল</div>
     <div class="file-stat-grid">
@@ -569,16 +575,15 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div id="myFilesList"></div>
   </div>
 
-  <!-- WALLET -->
   <div class="tab-panel" id="tab-wallet">
     <div class="balance-card">
       <div class="bg-circle c1"></div>
       <div class="bg-circle c2"></div>
       <div class="bal-label">উইথড্রঅ্যাবল ব্যালেন্স</div>
-      <div class="amount num"><span class="cs">$</span><span id="wBalance">0.0000</span></div>
+      <div class="amount num"><span class="cs">$</span><span id="wBalance">0</span></div>
       <div class="bal-sub">
         <i class="ph-duotone ph-arrow-up-right"></i>
-        মোট উইথড্র: <span class="cs">$</span><span class="num" id="wTotal">0.00</span>
+        মোট উইথড্র: <span class="cs">$</span><span class="num" id="wTotal">0</span>
       </div>
     </div>
     <div class="card" style="margin-top:14px">
@@ -614,13 +619,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div id="txList"></div>
   </div>
 
-  <!-- SUPPORT -->
   <div class="tab-panel" id="tab-support">
     <div class="sec-title"><i class="ph-duotone ph-headset"></i> সাপোর্ট</div>
     <div id="supportList"></div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <div class="botnav">
     <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
       <div class="nav-icon"><i class="ph-duotone ph-house"></i></div>হোম
@@ -643,7 +646,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
   </div>
 </div>
 
-<!-- Modals -->
 <div class="modal" id="spinModal">
   <div class="modal-body">
     <div class="modal-head">
@@ -758,6 +760,8 @@ function fireConfetti(){
     setTimeout(()=>c.remove(),2700);
   }
 }
+
+// FIX: Removed trailing zeros using parseFloat()
 const _countUpTargets=new Map();
 function countUp(el,to,dur=900){
   _countUpTargets.set(el,to);
@@ -768,9 +772,9 @@ function countUp(el,to,dur=900){
     if(_countUpTargets.get(el)!==to)return;
     const p=Math.min(1,(t-start)/dur);
     const eased=1-Math.pow(1-p,3);
-    el.textContent=(from+(to-from)*eased).toFixed(4);
+    el.textContent=parseFloat((from+(to-from)*eased).toFixed(4));
     if(p<1)requestAnimationFrame(step);
-    else{el.textContent=to.toFixed(4);el.dataset.balance=to;}
+    else{el.textContent=parseFloat(to.toFixed(4));el.dataset.balance=to;}
   }
   requestAnimationFrame(step);
 }
@@ -931,7 +935,12 @@ async function init(){
     });
 
     db.ref('notifications').orderByChild('timestamp').limitToLast(100).on('value',snap=>{
-      notifications=[];snap.forEach(c=>{const v=c.val();if(v)notifications.push({id:c.key,...v});});
+      notifications=[];snap.forEach(c=>{
+        const v=c.val();
+        if(v && (!v.targetUserId || v.targetUserId === uid)) {
+          notifications.push({id:c.key,...v});
+        }
+      });
       notifications.reverse();
       updateNotifBadge();
     });
@@ -956,7 +965,6 @@ async function init(){
       renderTransactions();
     });
 
-    // Listeners for Shop & Support
     db.ref('banners').on('value', s=>{ shopBanners=[]; s.forEach(c=>shopBanners.push({id:c.key,...c.val()})); renderShop(); });
     db.ref('categories').on('value', s=>{ shopCategories=[]; s.forEach(c=>shopCategories.push({id:c.key,...c.val()})); renderShop(); });
     db.ref('products').on('value', s=>{ shopProducts=[]; s.forEach(c=>{const v=c.val(); if(v.active) shopProducts.push({id:c.key,...v})}); renderShop(); });
@@ -1008,8 +1016,21 @@ function renderAll(){
   const newBal=parseFloat(currentUser.balance||0);
   const newEarned=parseFloat(currentUser.totalEarned||0);
   countUp($('balance'),newBal);
-  if($('wBalance'))$('wBalance').textContent=newBal.toFixed(4);
-  if($('accBalance'))$('accBalance').textContent=newBal.toFixed(4);
+  
+  // FIX: Removed trailing zeros using parseFloat()
+  if($('wBalance'))$('wBalance').textContent=parseFloat(newBal.toFixed(4));
+  if($('accProfileBalance'))$('accProfileBalance').textContent=parseFloat(newBal.toFixed(4));
+  
+  if($('accProfileAvatar')){
+    if(currentUser.photoUrl){
+      $('accProfileAvatar').innerHTML = `<img src="${currentUser.photoUrl}" alt="Profile">`;
+    } else {
+      $('accProfileAvatar').innerHTML = `<span style="color:var(--tg-blue);font-weight:700;font-size:24px">${initial}</span>`;
+    }
+    $('accProfileName').textContent = currentUser.name || 'User';
+    $('accProfileUid').textContent = currentUser.uid;
+    $('accProfileUsername').textContent = currentUser.username || 'N/A';
+  }
   
   const vip=getVIP(currentUser.totalEarned||0);
   const badge=$('vipBadge');
@@ -1017,7 +1038,7 @@ function renderAll(){
   badge.querySelector('i').style.color=vip.color;
   $('vipLabel').textContent=vip.label;
   
-  $('totalEarned').textContent=newEarned.toFixed(2);
+  $('totalEarned').textContent=parseFloat(newEarned.toFixed(2));
   $('refCount').textContent=currentUser.referralCount||0;
 
   renderAdsSection();
@@ -1039,7 +1060,7 @@ function renderAdsSection(){
   adNetworks.forEach(net=>{
     const isActive = appSettings[net.key+'Active'] === true;
     let lim = parseInt(appSettings[net.key+'Limit']);
-    if(isNaN(lim) || lim < 1) lim = 10; // Default limit to 10 if invalid or 0
+    if(isNaN(lim) || lim < 1) lim = 10; 
     
     if(!isActive) return; 
     
@@ -1277,8 +1298,8 @@ function renderLeaderboard(){
 }
 
 function renderWalletTab(){
-  $('wBalance').textContent=parseFloat(currentUser.balance||0).toFixed(4);
-  $('wTotal').textContent=parseFloat(currentUser.totalWithdrawn||0).toFixed(2);
+  $('wBalance').textContent=parseFloat(parseFloat(currentUser.balance||0).toFixed(4));
+  $('wTotal').textContent=parseFloat(parseFloat(currentUser.totalWithdrawn||0).toFixed(2));
 }
 
 function renderMethods(){
@@ -1404,7 +1425,6 @@ async function unlockByAd(productId){
   } catch(e){ showToast('অ্যাড লোড ব্যর্থ','danger'); }
 }
 
-// My Files Logic
 function renderMyFiles(){
   const stats = { total: myOrders.length, approved: 0, pending: 0, rejected: 0 };
   myOrders.forEach(o => stats[o.status]++);
@@ -1437,7 +1457,6 @@ function renderMyFiles(){
   $('myFilesList').innerHTML = html || '<div class="empty"><div class="et">কোন ফাইল নেই</div></div>';
 }
 
-// Support Logic
 function renderSupport(){
   let html = supportLinks.map(s=>`
     <div class="acc-menu-item" onclick="window.open('${s.url}','_blank')">
