@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Code Editor</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #A78BFA;
+            --bg-gradient-1: #0f0c29;
+            --bg-gradient-2: #302b63;
+            --bg-gradient-3: #24243e;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #E2E8F0;
+            --text-muted: #94A3B8;
+            --danger: #F87171;
+            --success: #34D399;
+            --warning: #FBBF24;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+            min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .page.active {
+            display: flex;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .upload-card {
+            border-radius: 24px;
+            padding: 50px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .upload-icon-box {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+        }
+
+        .upload-icon-box svg {
+            width: 40px;
+            height: 40px;
+            color: #fff;
+        }
+
+        .upload-card h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .upload-card p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--glass-border);
+            border-radius: 16px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--primary-light);
+            background: rgba(124, 58, 237, 0.1);
+            transform: scale(1.01);
+        }
+
+        .drop-zone p {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .browse-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .browse-btn:hover {
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .file-types {
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .ext-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .error-msg {
+            color: var(--danger);
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #editor-page {
+            padding: 0;
+            justify-content: flex-start;
+        }
+
+        .editor-navbar {
+            width: 100%;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid var(--glass-border);
+        }
+
+        .file-info svg {
+            width: 16px;
+            height: 16px;
+            color: var(--primary-light);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--primary-light);
+        }
+
+        .search-container input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            padding: 8px 12px;
+            font-size: 14px;
+            width: 220px;
+        }
+
+        .search-container .btn-icon {
+            background: transparent;
+            border: none;
+            border-left: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-container .btn-icon:hover {
+            color: var(--primary-light);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--primary-light);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-icon-only {
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            justify-content: center;
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-icon-only svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .editor-wrapper {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 70px);
+            margin-top: 10px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .CodeMirror {
+            flex: 1;
+            height: 100% !important;
+            font-size: 15px;
+            font-family: 'Fira Code', monospace;
+            line-height: 1.6;
+            background: transparent !important;
+        }
+
+        .CodeMirror-gutters {
+            background: rgba(0,0,0,0.2) !important;
+            border-right: 1px solid var(--glass-border) !important;
+        }
+
+        .cm-search-marker {
+            background: rgba(251, 191, 36, 0.3) !important;
+            border: 1px solid rgba(251, 191, 36, 0.8);
+            border-radius: 3px;
+            color: #fff !important;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-content {
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 420px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary-light);
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+        }
+
+        .input-group {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--primary-light);
+        }
+
+        .input-group input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 12px 15px;
+            color: var(--text-main);
+            font-size: 15px;
+        }
+
+        .input-group .extension {
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            font-family: 'Fira Code', monospace;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Toast notification for inline feedback */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        #preview-modal .modal-content {
+            max-width: 90%;
+            width: 90%;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .preview-frame-wrapper {
+            flex: 1;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .editor-navbar {
+                padding: 10px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .nav-left {
+                min-width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .search-container input {
+                width: 100%;
+            }
+            .file-info {
+                justify-content: center;
+            }
+            .nav-right {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+            .btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 13px;
+                padding: 8px 10px;
+            }
+            .upload-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- পেজ ১: আপলোড পেজ -->
+    <div id="upload-page" class="page active">
+        <div class="upload-card glass">
+            <div class="upload-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <h1>কোড ফাইল আপলোড করুন</h1>
+            <p>আপনার কম্পিউটার বা মোবাইল থেকে ফাইল টেনে এনে ছাড়ুন অথবা ব্রাউজ করুন। ফাইল আপলোড হলে অটোমেটিক এডিটরে চলে যাবে।</p>
+            
+            <div id="drop-zone" class="drop-zone">
+                <p>ফাইল এখানে ড্র্যাগ এন্ড ড্রপ করুন</p>
+                <div class="browse-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                    ব্রাউজ ফাইল
+                </div>
+                <input type="file" id="file-input" hidden accept=".php,.py,.html,.xml">
+            </div>
+            
+            <div class="file-types">
+                <span class="ext-badge">.php</span>
+                <span class="ext-badge">.py</span>
+                <span class="ext-badge">.html</span>
+                <span class="ext-badge">.xml</span>
+            </div>
+            <div id="error-msg" class="error-msg">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                শুধুমাত্র PHP, Python, HTML, XML ফাইল আপলোড করা যাবে!
+            </div>
+        </div>
+    </div>
+
+    <!-- পেজ ২: এডিটর পেজ -->
+    <div id="editor-page" class="page">
+        <div class="editor-navbar glass">
+            <div class="nav-left">
+                <div class="file-info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                    <span id="current-file-name">untitled.txt</span>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="কোডে সার্চ করুন...">
+                    <button id="search-btn" class="btn-icon" title="সার্চ করুন">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="nav-right">
+                <!-- আনডু বাটন -->
+                <button id="undo-btn" class="btn btn-icon-only" title="আনডু (Undo)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                </button>
+                <!-- রিডু বাটন -->
+                <button id="redo-btn" class="btn btn-icon-only" title="রিডু (Redo)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </button>
+                <!-- প্রিভিউ বাটন (শুধু HTML এর জন্য) -->
+                <button id="preview-btn" class="btn btn-primary" style="display:none;" title="প্রিভিউ দেখুন">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    প্রিভিউ
+                </button>
+                <button id="new-file-btn" class="btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                    নতুন
+                </button>
+                <button id="save-download-btn" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    ডাউনলোড
+                </button>
+            </div>
+        </div>
+
+        <div class="editor-wrapper glass">
+            <textarea id="code-editor"></textarea>
+        </div>
+    </div>
+
+    <!-- ডাউনলোড মডাল -->
+    <div id="download-modal" class="modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                <h3>ফাইল সেইভ করুন</h3>
+            </div>
+            <div class="input-group">
+                <input type="text" id="filename-input" placeholder="ফাইলের নাম লিখুন">
+                <span class="extension" id="extension-display">.html</span>
+            </div>
+            <div class="modal-actions">
+                <button id="cancel-download" class="btn">বাতিল</button>
+                <button id="confirm-download" class="btn btn-primary">ডাউনলোড করুন</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- প্রিভিউ মডাল -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-content glass">
+            <div class="preview-header">
+                <h3>HTML প্রিভিউ</h3>
+                <button id="close-preview" class="btn btn-icon-only">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="preview-frame-wrapper">
+                <iframe id="preview-iframe" title="Code Preview"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- টোস্ট নোটিফিকেশন -->
+    <div id="toast" class="toast"></div>
+
+    <!-- CodeMirror JS লাইব্রেরি -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/php/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+
+    <script>
+        const uploadPage = document.getElementById('upload-page');
+        const editorPage = document.getElementById('editor-page');
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const errorMsg = document.getElementById('error-msg');
+        const codeEditorTextarea = document.getElementById('code-editor');
+        const currentFileName = document.getElementById('current-file-name');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const undoBtn = document.getElementById('undo-btn');
+        const redoBtn = document.getElementById('redo-btn');
+        const previewBtn = document.getElementById('preview-btn');
+        const newFileBtn = document.getElementById('new-file-btn');
+        const saveDownloadBtn = document.getElementById('save-download-btn');
+        const downloadModal = document.getElementById('download-modal');
+        const filenameInput = document.getElementById('filename-input');
+        const extensionDisplay = document.getElementById('extension-display');
+        const cancelDownload = document.getElementById('cancel-download');
+        const confirmDownload = document.getElementById('confirm-download');
+        const previewModal = document.getElementById('preview-modal');
+        const previewIframe = document.getElementById('preview-iframe');
+        const closePreview = document.getElementById('close-preview');
+        const toast = document.getElementById('toast');
+
+        let currentFileExtension = 'html';
+        const allowedExtensions = ['php', 'py', 'html', 'xml'];
+        let editor;
+        
+        let lastQuery = "";
+        let searchCursor = null;
+        let currentMarks = [];
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        editor = CodeMirror.fromTextArea(codeEditorTextarea, {
+            lineNumbers: true,
+            mode: "htmlmixed",
+            theme: "dracula",
+            autoCloseTags: true,
+            autoCloseBrackets: true,
+            lineWrapping: true,
+            indentUnit: 4,
+            tabSize: 4
+        });
+
+        function handleFile(file) {
+            const fileName = file.name;
+            const extension = fileName.split('.').pop().toLowerCase();
+
+            if (!allowedExtensions.includes(extension)) {
+                errorMsg.style.display = 'flex';
+                setTimeout(() => errorMsg.style.display = 'none', 3000);
+                return;
+            }
+
+            currentFileExtension = extension;
+            currentFileName.textContent = fileName;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                editor.setValue(e.target.result);
+                
+                if (extension === 'php') editor.setOption("mode", "php");
+                else if (extension === 'py') editor.setOption("mode", "python");
+                else if (extension === 'xml') editor.setOption("mode", "xml");
+                else if (extension === 'html') editor.setOption("mode", "htmlmixed");
+                
+                if (extension === 'html') {
+                    previewBtn.style.display = 'flex';
+                } else {
+                    previewBtn.style.display = 'none';
+                }
+                
+                uploadPage.classList.remove('active');
+                editorPage.classList.add('active');
+                
+                setTimeout(() => editor.refresh(), 100);
+            };
+            reader.readAsText(file);
+        }
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFile(e.target.files[0]);
+        });
+
+        ['dragover', 'dragenter'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+        });
+
+        function clearSearchMarks() {
+            currentMarks.forEach(mark => mark.clear());
+            currentMarks = [];
+        }
+
+        function performSearch() {
+            const query = searchInput.value;
+            if (!query) {
+                clearSearchMarks();
+                lastQuery = "";
+                return;
+            }
+
+            if (query !== lastQuery) {
+                clearSearchMarks();
+                lastQuery = query;
+                searchCursor = editor.getSearchCursor(query, { line: 0, ch: 0 }, { caseFold: true });
+            }
+
+            let found = false;
+            if (searchCursor.findNext()) {
+                found = true;
+            } else {
+                searchCursor = editor.getSearchCursor(query, { line: 0, ch: 0 }, { caseFold: true });
+                if (searchCursor.findNext()) found = true;
+            }
+
+            if (found) {
+                const from = searchCursor.from();
+                const to = searchCursor.to();
+                clearSearchMarks();
+                let mark = editor.markText(from, to, { className: "cm-search-marker" });
+                currentMarks.push(mark);
+                editor.setSelection(from, to);
+                editor.scrollIntoView({ from: from, to: to }, 100);
+            } else {
+                clearSearchMarks();
+                showToast('কোডে শব্দটি খুঁজে পাওয়া যায়নি!');
+                lastQuery = "";
+            }
+        }
+
+        searchBtn.addEventListener('click', performSearch);
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+
+        searchInput.addEventListener('input', () => {
+            if (searchInput.value === '') {
+                clearSearchMarks();
+                lastQuery = "";
+            }
+        });
+
+        undoBtn.addEventListener('click', () => {
+            editor.undo();
+            editor.focus();
+        });
+
+        redoBtn.addEventListener('click', () => {
+            editor.redo();
+            editor.focus();
+        });
+
+        previewBtn.addEventListener('click', () => {
+            const code = editor.getValue();
+            previewIframe.srcdoc = code;
+            previewModal.style.display = 'flex';
+        });
+
+        closePreview.addEventListener('click', () => {
+            previewModal.style.display = 'none';
+            previewIframe.srcdoc = "";
+        });
+
+        saveDownloadBtn.addEventListener('click', () => {
+            extensionDisplay.textContent = '.' + currentFileExtension;
+            filenameInput.value = currentFileName.textContent.replace(/\.[^/.]+$/, "");
+            downloadModal.style.display = 'flex';
+            filenameInput.focus();
+        });
+
+        cancelDownload.addEventListener('click', () => {
+            downloadModal.style.display = 'none';
+        });
+
+        // মোবাইল ও ডেস্কটপ উভয়ের জন্য ১০০% কার্যকর ফাইল ডাউনলোড ফাংশন
+        confirmDownload.addEventListener('click', () => {
+            let filename = filenameInput.value.trim();
+            if (!filename) {
+                filename = "my_code";
+            }
+            
+            filename = filename + '.' + currentFileExtension;
+            
+            try {
+                const code = editor.getValue();
+                
+                // মোবাইল ব্রাউজার যাতে সরাসরি ফাইলটি ডাউনলোড করে তাই generic application/octet-stream ব্যবহার করা হয়েছে
+                const blob = new Blob([code], { type: 'application/octet-stream' });
+                
+                if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                    window.navigator.msSaveOrOpenBlob(blob, filename);
+                } else {
+                    const downloadUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    
+                    a.click();
+                    
+                    // মোবাইল ব্রাউজার প্রসেস করার জন্য ১ সেকেন্ড সময় নিশ্চিত করা হচ্ছে
+                    setTimeout(function() {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(downloadUrl);
+                    }, 1000);
+                }
+                
+                downloadModal.style.display = 'none';
+                showToast('ফাইল ডাউনলোড শুরু হয়েছে!');
+                
+            } catch (err) {
+                console.error("Download Error:", err);
+                showToast('ফাইল ডাউনলোড করতে সমস্যা হচ্ছে।');
+            }
+        });
+
+        newFileBtn.addEventListener('click', () => {
+            editorPage.classList.remove('active');
+            uploadPage.classList.add('active');
+            fileInput.value = ''; 
+            searchInput.value = '';
+            clearSearchMarks();
+            lastQuery = "";
+            previewBtn.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
