@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আমার পার্সোনাল ব্লগ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="container navbar">
+            <h1 class="logo"><a href="index.html">আমার ব্লগ</a></h1>
+            <nav id="categories-nav">
+                <!-- ক্যাটাগরি অটোমেটিক লোড হবে -->
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="blog-grid" id="blog-posts">
+            <!-- ব্লগ পোস্ট লোড হবে -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; ২০২৬ আমার পার্সোনাল ব্লগ | সর্বস্বত্ব সংরক্ষিত</p>
+    </footer>
+
+    <script src="posts.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const blogGrid = document.getElementById("blog-posts");
+            const catNav = document.getElementById("categories-nav");
+
+            const categories = ["সব", ...new Set(postsData.map(p => p.category))];
+            
+            catNav.innerHTML = categories.map(cat => 
+                `<button onclick="filterCategory('${cat}')" class="cat-btn">${cat}</button>`
+            ).join('');
+
+            window.renderPosts = (data) => {
+                blogGrid.innerHTML = data.map(post => `
+                    <article class="card">
+                        <img src="${post.image}" alt="${post.title}" class="card-img">
+                        <div class="card-body">
+                            <span class="badge">${post.category}</span>
+                            <h2><a href="post.html?id=${post.id}">${post.title}</a></h2>
+                            <p class="date">${post.date}</p>
+                            <p>${post.excerpt}</p>
+                            <a href="post.html?id=${post.id}" class="read-more">বিস্তারিত পড়ুন &rarr;</a>
+                        </div>
+                    </article>
+                `).join('');
+            };
+
+            window.filterCategory = (cat) => {
+                if(cat === "সব") {
+                    renderPosts(postsData);
+                } else {
+                    const filtered = postsData.filter(p => p.category === cat);
+                    renderPosts(filtered);
+                }
+            };
+
+            renderPosts(postsData);
+        });
+    </script>
+</body>
+</html>
