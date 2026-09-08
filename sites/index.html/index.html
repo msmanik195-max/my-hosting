@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API Storage Dashboard</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f4f7fb;color:#172033}
+.wrap{max-width:900px;margin:auto;padding:20px}.card{background:#fff;border:1px solid #e3e8f0;border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 6px 25px #1720330b}
+h1{margin:0 0 5px;font-size:25px}.muted{color:#687386;font-size:14px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{padding:16px;background:#f7f9fc;border-radius:14px}.stat b{display:block;font-size:20px;margin-top:5px}
+input,button{width:100%;padding:12px;border-radius:10px;border:1px solid #d8dee8;font:inherit}button{cursor:pointer;background:#172033;color:white;border:0;font-weight:600;margin-top:8px}
+button.secondary{background:#eef2f7;color:#172033}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.status{padding:12px;border-radius:10px;background:#f7f9fc;margin-top:10px;white-space:pre-wrap;word-break:break-word}
+@media(max-width:650px){.grid,.row{grid-template-columns:1fr}.wrap{padding:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>API Storage Dashboard</h1>
+    <div class="muted">Token is configured inside this file.</div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div class="stat">Account ID<b id="id">—</b></div>
+      <div class="stat">Quota<b id="quota">—</b></div>
+      <div class="stat">Used<b id="used">—</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>API Configuration</h3>
+    <div class="row">
+      <label>API Base URL<input id="base" value=""></label>
+      <label>Endpoint<input id="endpoint" value="/api/me"></label>
+    </div>
+    <button onclick="loadData()">Load account data</button>
+    <button class="secondary" onclick="clearData()">Clear displayed data</button>
+    <div id="status" class="status">Ready.</div>
+  </div>
+
+  <div class="card">
+    <h3>Upload</h3>
+    <input id="file" type="file">
+    <button onclick="uploadFile()">Upload file</button>
+    <div class="muted">The upload endpoint is set to <b>/api/upload</b>. Change it in the JavaScript if your API uses another path.</div>
+  </div>
+
+  <div class="card">
+    <h3>Files</h3>
+    <button onclick="listFiles()">Refresh file list</button>
+    <div id="files" class="status">No files loaded.</div>
+  </div>
+</div>
+
+<script>
+/*
+  IMPORTANT:
+  This is the token value supplied in the conversation.
+  The supplied token was truncated with "..." so it cannot authenticate
+  until the complete token is inserted here.
+*/
+const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+
+const API_BASE = location.origin;
+
+function headers(extra={}) {
+  return {
+    "Authorization": "Bearer " + TOKEN,
+    ...extra
+  };
+}
+
+function show(msg) {
+  document.getElementById("status").textContent = msg;
+}
+
+function fmtBytes(n) {
+  if (!Number.isFinite(Number(n))) return "—";
+  const units=["B","KB","MB","GB","TB"];
+  let i=0, x=Number(n);
+  while(x>=1024 && i<units.length-1){x/=1024;i++}
+  return x.toFixed(i?2:0)+" "+units[i];
+}
+
+async function request(path, options={}) {
+  const res = await fetch(API_BASE + path, {
+    ...options,
+    headers: headers(options.headers || {})
+  });
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch { data = text; }
+  if (!res.ok) throw new Error("HTTP "+res.status+": "+text);
+  return data;
+}
+
+async function loadData() {
+  const endpoint = document.getElementById("endpoint").value.trim() || "/api/me";
+  show("Loading...");
+  try {
+    const result = await request(endpoint);
+    const d = result.data || result;
+    document.getElementById("id").textContent = d.id ?? "—";
+    document.getElementById("quota").textContent = fmtBytes(d.quota);
+    document.getElementById("used").textContent = fmtBytes(d.used);
+    show(JSON.stringify(result, null, 2));
+  } catch(e) {
+    show("Request failed:\n" + e.message);
+  }
+}
+
+async function uploadFile() {
+  const input = document.getElementById("file");
+  if (!input.files.length) return show("Choose a file first.");
+  const fd = new FormData();
+  fd.append("file", input.files[0]);
+  show("Uploading...");
+  try {
+    const result = await request("/api/upload", {method:"POST", body:fd});
+    show(JSON.stringify(result, null, 2));
+    listFiles();
+  } catch(e) {
+    show("Upload failed:\n" + e.message);
+  }
+}
+
+async function listFiles() {
+  const box = document.getElementById("files");
+  box.textContent = "Loading...";
+  try {
+    const result = await request("/api/files");
+    box.textContent = JSON.stringify(result, null, 2);
+  } catch(e) {
+    box.textContent = "File list failed:\n" + e.message;
+  }
+}
+
+function clearData() {
+  document.getElementById("id").textContent="—";
+  document.getElementById("quota").textContent="—";
+  document.getElementById("used").textContent="—";
+  document.getElementById("files").textContent="No files loaded.";
+  show("Cleared.");
+}
+</script>
+</body>
+</html>
