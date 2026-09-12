@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Clone App</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#000;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden}
+.app-container{width:100%;max-width:400px;height:100vh;position:relative;background:#121212;display:flex;flex-direction:column;justify-content:space-between}
+.top-bar{position:absolute;top:10px;width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;z-index:10}
+.search-bar input{padding:6px 12px;border-radius:20px;border:none;outline:none;background:rgba(255,255,255,.2);color:white;width:140px}
+.top-nav{font-weight:bold;font-size:16px}
+.video-container{height:100%;width:100%;position:relative;background:#000}
+video{width:100%;height:100%;object-fit:cover;filter:contrast(110%) brightness(105%) saturate(120%)}
+.side-bar{position:absolute;right:15px;bottom:100px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:10}
+.action-btn{display:flex;flex-direction:column;align-items:center;font-size:12px;cursor:pointer}
+.action-btn span{font-size:24px;margin-bottom:2px}
+.bottom-details{position:absolute;bottom:70px;left:15px;z-index:10;max-width:75%}
+.user-name{font-weight:bold;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.follow-btn{background:#fe2c55;color:white;border:none;padding:2px 8px;border-radius:4px;font-size:12px;cursor:pointer}
+.hashtags{color:#20d5ec;font-size:14px;margin-top:5px}
+.bottom-nav{height:60px;background:#000;display:flex;justify-content:space-around;align-items:center;border-top:.5px solid #333;z-index:10}
+.upload-btn{background:linear-gradient(90deg,#20d5ec 50%,#fe2c55 50%);width:45px;height:28px;border-radius:8px;display:flex;justify-content:center;align-items:center;color:#000;font-weight:bold;cursor:pointer}
+.upload-inner{background:#fff;width:39px;height:28px;border-radius:6px;display:flex;justify-content:center;align-items:center;font-size:18px}
+</style>
+</head>
+<body>
+<div class="app-container">
+<div class="top-bar">
+<div class="search-bar"><input type="text" placeholder="সার্চ করুন..."></div>
+<div class="top-nav">For You</div>
+</div>
+<div class="video-container">
+<video id="mainVideo" autoplay loop muted playsinline src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+<div class="side-bar">
+<div class="action-btn" onclick="addLike()"><span>❤️</span><p id="likeCount">500.0M</p></div>
+<div class="action-btn"><span>💬</span><p>125.4K</p></div>
+<div class="action-btn" onclick="copyLink()"><span>↗️</span><p>শেয়ার</p></div>
+<div class="action-btn" onclick="copyLink()"><span>🔗</span><p>কপি লিংক</p></div>
+</div>
+<div class="bottom-details">
+<div class="user-name">@user_id <button class="follow-btn" onclick="this.innerText='Following'">Follow</button></div>
+<p>নতুন ট্রেন্ডিং ভিডিও! 🎵</p>
+<div class="hashtags">#ForYou #Trending #Viral</div>
+</div>
+</div>
+<div class="bottom-nav">
+<div>🏠 হোম</div>
+<div class="upload-btn" onclick="triggerCameraUpload()"><div class="upload-inner">+</div></div>
+<div onclick="openProfile()">👤 প্রোফাইল</div>
+</div>
+</div>
+<script>
+let views=600000000,likes=500000000;
+function updateLikes(){document.getElementById('likeCount').innerText=(likes/1000000).toFixed(1)+'M'}
+setTimeout(()=>{views+=5000;likes+=1200;updateLikes()},3000);
+function addLike(){likes++;updateLikes()}
+function triggerCameraUpload(){
+const input=document.createElement('input');input.type='file';input.accept='video/*';input.capture='camera';
+input.onchange=e=>{const file=e.target.files[0];if(file){const video=document.getElementById('mainVideo');video.src=URL.createObjectURL(file);video.play();alert('ভিডিও সফলভাবে আপলোড হয়েছে!');cacheVideoForOffline(file)}};
+input.click();
+}
+function copyLink(){if(navigator.clipboard)navigator.clipboard.writeText(location.href).then(()=>alert('ভিডিও লিংক কপি হয়েছে!'));else alert('এই ব্রাউজারে কপি সুবিধা নেই।')}
+function cacheVideoForOffline(file){if('caches' in window)caches.open('tiktok-offline-videos').then(c=>c.put('/offline-video-'+Date.now(),new Response(file)))}
+function openProfile(){alert('আপনার নিজস্ব প্রোফাইল ও আপলোড করা ভিডিও দেখতে পাচ্ছেন।')}
+</script>
+</body>
+</html>
