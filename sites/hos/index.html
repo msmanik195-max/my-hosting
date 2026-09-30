@@ -1,0 +1,79 @@
+<?php
+// রিয়েল ডাটাবেজ ও ইউজার ডাটা ফেচিং
+$db = \Config\Database::connect();
+
+// ১. ইউজারের সঠিক আইডি বের করার মাল্টিপল চেক
+$uid = 0;
+if (function_exists('current_user') && current_user('id')) {
+    $uid = current_user('id');
+} elseif (session()->has('user_id')) {
+    $uid = session('user_id');
+} elseif (session()->has('uid')) {
+    $uid = session('uid');
+} elseif (session()->has('id')) {
+    $uid = session('id');
+}
+
+$user_devices_count  = 0;
+$user_invoices_count = 0;
+$user_stored_data    = 0;
+$today_success_amt   = 0;
+$today_pending_amt   = 0;
+$today_success_cnt   = 0;
+$today_pending_cnt   = 0;
+
+try {
+    // ২. ডিভাইস সংখ্যা নিখুঁতভাবে বের করা
+    if ($db->tableExists('devices')) {
+        // প্রথমে user_id দিয়ে চেক
+        $devBuilder = $db->table('devices');
+        if ($db->fieldExists('user_id', 'devices') && $uid > 0) {
+            $user_devices_count = $devBuilder->where('user_id', $uid)->countAllResults();
+        } elseif ($db->fieldExists('uid', 'devices') && $uid > 0) {
+            $user_devices_count = $devBuilder->where('uid', $uid)->countAllResults();
+        } else {
+            // যদি ফিল্টার না মেলে তবে ইউজারের ডিভাইসগুলো সরাসরি গোনা
+            $user_devices_count = $devBuilder->countAllResults();
+        }
+    }
+
+    // ৩. ইনভয়েস সংখ্যা
+    if ($db->tableExists('invoices')) {
+        $invBuilder = $db->table('invoices');
+        if ($uid > 0 && $db->fieldExists('user_id', 'invoices')) {
+            $user_invoices_count = $invBuilder->where('user_id', $uid)->where('status', 0)->countAllResults();
+        } else {
+            $user_invoices_count = $invBuilder->where('status', 0)->countAllResults();
+        }
+    }
+
+    // ৪. স্টোরড ডাটা / ব্র্যান্ড সংখ্যা
+    if ($db->tableExists('brand')) {
+        $bBuilder = $db->table('brand');
+        $user_stored_data = ($uid > 0 && $db->fieldExists('user_id', 'brand')) ? $bBuilder->where('user_id', $uid)->countAllResults() : $bBuilder->countAllResults();
+    } elseif ($db->tableExists('brands')) {
+        $bBuilder = $db->table('brands');
+        $user_stored_data = ($uid > 0 && $db->fieldExists('user_id', 'brands')) ? $bBuilder->where('user_id', $uid)->countAllResults() : $bBuilder->countAllResults();
+    }
+
+    // ৫. আজকের লেনদেনের হিসাব
+    $today = date('Y-m-d');
+    if ($db->tableExists('transactions')) {
+        $userCond = ($uid > 0 && $db->fieldExists('user_id', 'transactions')) ? "AND user_id = '$uid'" : "";
+
+        // আজকের সফল লেনদেন
+        $tsQ = $db->query("SELECT SUM(amount) as amt, COUNT(id) as cnt FROM transactions WHERE status = 1 $userCond AND DATE(created_at) = '$today'");
+        if ($tsQ && $row = $tsQ->getRow()) {
+            $today_success_amt = $row->amt ?? 0;
+            $today_success_cnt = $row->cnt ?? 0;
+        }
+
+        // আজকের পেন্ডিং লেনদেন
+        $tpQ = $db->query("SELECT SUM(amount) as amt, COUNT(id) as cnt FROM transactions WHERE status = 0 $userCond AND DATE(created_at) = '$today'");
+        if ($tpQ && $row = $tpQ->getRow()) {
+            $today_pending_amt = $row->amt ?? 0;
+            $today_pending_cnt = $row->cnt ?? 0;
+        }
+    }
+} catch (\Throwable $e) {}
+?>
