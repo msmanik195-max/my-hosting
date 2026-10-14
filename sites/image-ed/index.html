@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina 3D Studio — Modern Photo & Color Grading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-main: #eef2f9;
+        }
+
+        body {
+            background: radial-gradient(circle at 15% 10%, #ffffff 0%, #eef2f9 55%, #e2e8f5 100%);
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* 3D Elevated Outer Panel */
+        .panel-3d {
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            box-shadow: 
+                14px 14px 32px rgba(148, 163, 184, 0.28),
+                -10px -10px 28px rgba(255, 255, 255, 0.95),
+                inset 0 1px 1px rgba(255, 255, 255, 1);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+        }
+
+        /* 3D Interactive Floating Card */
+        .card-3d {
+            background: linear-gradient(145deg, #ffffff, #f4f7fb);
+            box-shadow: 
+                6px 8px 18px rgba(148, 163, 184, 0.22),
+                -6px -6px 16px rgba(255, 255, 255, 0.9),
+                0 3px 0 #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .card-3d:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                10px 14px 24px rgba(148, 163, 184, 0.28),
+                -6px -6px 16px rgba(255, 255, 255, 0.95),
+                0 5px 0 #cbd5e1;
+        }
+        .card-3d.active-card {
+            background: linear-gradient(145deg, #eef2ff, #e0e7ff);
+            border-color: #818cf8;
+            box-shadow: 
+                0 4px 0 #6366f1,
+                0 10px 20px rgba(99, 102, 241, 0.22);
+            transform: translateY(-2px);
+        }
+
+        /* 3D Recessed Inner Well */
+        .well-3d {
+            background: #e8eef7;
+            box-shadow: 
+                inset 5px 5px 11px rgba(148, 163, 184, 0.35),
+                inset -5px -5px 11px rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* 3D Tactile Primary Push Button */
+        .btn-3d-primary {
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: 
+                0 5px 0 #3730a3,
+                0 10px 20px rgba(79, 70, 229, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.4);
+            transition: all 0.12s ease;
+        }
+        .btn-3d-primary:hover {
+            background: linear-gradient(180deg, #6d70f7 0%, #554cf0 100%);
+            transform: translateY(-1px);
+            box-shadow: 
+                0 6px 0 #3730a3,
+                0 12px 24px rgba(79, 70, 229, 0.38),
+                inset 0 1px 1px rgba(255, 255, 255, 0.5);
+        }
+        .btn-3d-primary:active, .btn-3d-primary.is-pressed {
+            transform: translateY(4px);
+            box-shadow: 
+                0 1px 0 #3730a3,
+                0 4px 10px rgba(79, 70, 229, 0.25);
+        }
+
+        /* 3D Tactile Light Push Button */
+        .btn-3d-white {
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            box-shadow: 
+                0 4px 0 #cbd5e1,
+                0 8px 16px rgba(15, 23, 42, 0.08),
+                inset 0 1px 0 #ffffff;
+            border: 1px solid #e2e8f0;
+            transition: all 0.12s ease;
+        }
+        .btn-3d-white:hover {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 5px 0 #cbd5e1,
+                0 10px 20px rgba(15, 23, 42, 0.12),
+                inset 0 1px 0 #ffffff;
+        }
+        .btn-3d-white:active {
+            transform: translateY(3px);
+            box-shadow: 
+                0 1px 0 #cbd5e1,
+                0 3px 6px rgba(15, 23, 42, 0.06);
+        }
+
+        /* 3D Custom Range Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            outline: none;
+            box-shadow: 
+                inset 2px 2px 5px rgba(100, 116, 139, 0.35),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #ffffff, #6366f1);
+            border: 3px solid #ffffff;
+            cursor: pointer;
+            box-shadow: 
+                0 3px 0 #4338ca,
+                0 6px 12px rgba(79, 70, 229, 0.4);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.14);
+        }
+        input[type="range"]::-webkit-slider-thumb:active {
+            transform: scale(0.95) translateY(2px);
+            box-shadow: 0 1px 0 #4338ca, 0 3px 6px rgba(79, 70, 229, 0.3);
+        }
+
+        /* 3D Stage & Canvas Frame */
+        .stage-perspective {
+            perspective: 1200px;
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(#cbd5e1 1.25px, transparent 1.25px), 
+                radial-gradient(#e2e8f0 1.25px, #f8fafc 1.25px);
+            background-size: 28px 28px;
+            background-position: 0 0, 14px 14px;
+        }
+
+        .canvas-3d-frame {
+            transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+            transform-style: preserve-3d;
+            box-shadow: 
+                0 25px 50px -12px rgba(15, 23, 42, 0.25),
+                0 0 0 8px #ffffff,
+                0 8px 0 8px #cbd5e1,
+                0 32px 60px rgba(79, 70, 229, 0.15);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col no-select p-3 sm:p-5 lg:p-8 gap-6 max-w-[1440px] mx-auto">
+
+    <!-- Hidden File Input -->
+    <input type="file" id="fileInput" accept="image/*" class="hidden">
+
+    <section class="panel-3d rounded-[2rem] p-6 sm:p-10 lg:p-12 relative overflow-hidden">
+        <!-- Decorative 3D Ambient Glows -->
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-indigo-400/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-fuchsia-400/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div class="max-w-2xl text-center lg:text-left space-y-4">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full well-3d text-indigo-600 text-xs font-extrabold uppercase tracking-wider">
+                    <i class="ph-fill ph-cube-transparent text-base"></i>
+                    <span>Lumina 3D Studio • Light Pro Edition</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
+                    Next-Gen <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-500">3D Photo & Color</span> Grading Studio
+                </h1>
+                <p class="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
+                    Upload your image to unlock tactile 3D color schemes, atmospheric dual-tone gradients, optical blur, precision filters, and instant before/after inspection—all processed locally in crisp high definition.
+                </p>
+            </div>
+
+            <!-- Hero 3D Action Console -->
+            <div class="card-3d p-4 sm:p-5 rounded-3xl flex flex-wrap items-center justify-center gap-3 shrink-0 w-full sm:w-auto">
+                <button onclick="document.getElementById('fileInput').click()" class="btn-3d-primary px-5 sm:px-6 py-3.5 rounded-2xl text-white text-xs sm:text-sm font-extrabold flex items-center gap-2.5 cursor-pointer">
+                    <i class="ph-bold ph-upload-simple text-lg"></i>
+                    <span>Upload Photo</span>
+                </button>
+
+                <button id="resetAllBtn" class="btn-3d-white px-4 py-3.5 rounded-2xl text-slate-700 hover:text-slate-900 text-xs sm:text-sm font-extrabold flex items-center gap-2 cursor-pointer" title="Reset All Adjustments">
+                    <i class="ph-bold ph-arrow-counter-clockwise text-lg text-rose-500"></i>
+                    <span>Reset</span>
+                </button>
+
+                <button id="downloadBtn" class="btn-3d-white px-5 py-3.5 rounded-2xl text-indigo-600 hover:text-indigo-700 text-xs sm:text-sm font-extrabold flex items-center gap-2 cursor-pointer">
+                    <i class="ph-bold ph-download-simple text-lg"></i>
+                    <span>Export HD</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <main id="studioWorkspace" class="flex-1 flex flex-col lg:flex-row gap-6 relative">
+        
+        <!-- Left / Top: 3D Interactive Stage Area -->
+        <section id="dropZone" class="flex-1 stage-perspective panel-3d rounded-[2rem] relative flex flex-col items-center justify-center p-4 sm:p-8 overflow-hidden min-h-[420px] sm:min-h-[520px] lg:min-h-[640px]">
+            
+            <!-- Top Stage Floating Pills -->
+            <div class="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-20">
+                <div class="pointer-events-auto flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white shadow-md">
+                    <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                    <span id="resolutionInfo" class="text-xs font-mono font-bold text-slate-600">No Image Loaded</span>
+                </div>
+
+                <!-- 3D Tilt Toggle Switch -->
+                <button id="tiltToggleBtn" onclick="toggle3DTilt()" class="pointer-events-auto btn-3d-white px-3.5 py-2 rounded-xl text-xs font-extrabold text-indigo-600 flex items-center gap-1.5 cursor-pointer">
+                    <i class="ph-fill ph-cube text-sm"></i>
+                    <span id="tiltStatusText">3D Tilt: ON</span>
+                </button>
+            </div>
+
+            <!-- Drag & Drop 3D Overlay -->
+            <div id="dragOverlay" class="absolute inset-4 rounded-3xl border-2 border-dashed border-indigo-500 bg-white/90 backdrop-blur-md z-30 hidden flex-col items-center justify-center pointer-events-none shadow-2xl">
+                <div class="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-3 shadow-inner animate-bounce">
+                    <i class="ph-fill ph-image-square text-4xl"></i>
+                </div>
+                <p class="text-lg font-extrabold text-slate-800">Drop Your Image Here</p>
+                <p class="text-xs text-slate-500 mt-1">Supports PNG, JPG, WEBP in High Resolution</p>
+            </div>
+
+            <!-- Empty State 3D Upload Prompt (Shown when no image is loaded) -->
+            <div id="emptyUploadState" onclick="document.getElementById('fileInput').click()" class="card-3d p-8 sm:p-12 rounded-[2rem] max-w-md w-full text-center cursor-pointer flex flex-col items-center justify-center gap-4 my-8 z-10 group">
+                <div class="w-20 h-20 rounded-3xl well-3d flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform duration-300">
+                    <i class="ph-duotone ph-cloud-arrow-up text-5xl"></i>
+                </div>
+                <div class="space-y-1.5">
+                    <h3 class="text-lg sm:text-xl font-extrabold text-slate-800">Upload Your Photo to Start</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium">Click here or drag & drop an image file anywhere on this 3D stage</p>
+                </div>
+                <div class="mt-2 btn-3d-primary px-6 py-3 rounded-xl text-white text-xs sm:text-sm font-bold flex items-center gap-2">
+                    <i class="ph-bold ph-folder-open text-base"></i>
+                    <span>Choose Image File</span>
+                </div>
+                <div class="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider pt-2">
+                    <span>PNG</span> • <span>JPG</span> • <span>WEBP</span> • <span>100% Private</span>
+                </div>
+            </div>
+
+            <!-- 3D Tilting Canvas Wrapper (Hidden until user uploads an image) -->
+            <div id="canvasWrapper" class="relative hidden items-center justify-center max-w-full max-h-full my-12">
+                <canvas id="editorCanvas" class="canvas-3d-frame max-w-full max-h-[52vh] sm:max-h-[60vh] lg:max-h-[520px] w-auto h-auto object-contain rounded-2xl cursor-pointer bg-white"></canvas>
+                
+                <!-- Floating 3D Status Badge (Before / After Indicator) -->
+                <div id="statusBadge" class="absolute top-4 left-4 px-3.5 py-1.5 rounded-xl bg-amber-500 text-white shadow-[0_4px_0_#b45309,0_10px_20px_rgba(245,158,11,0.4)] border border-amber-300 text-xs font-extrabold tracking-wider uppercase flex items-center gap-2 pointer-events-none transition-all duration-200 opacity-0 scale-90">
+                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                    <span>Original (Before)</span>
+                </div>
+            </div>
+
+            <!-- Bottom Floating 3D Control Dock (Compare & Replace Photo) -->
+            <div id="stageBottomDock" class="absolute bottom-4 left-1/2 -translate-x-1/2 hidden items-center gap-2 sm:gap-2.5 bg-white/90 backdrop-blur-xl p-2 rounded-2xl border border-white shadow-[0_12px_30px_rgba(15,23,42,0.12)] z-20 w-[92%] sm:w-auto justify-between sm:justify-center">
+                <button onclick="document.getElementById('fileInput').click()" class="btn-3d-white px-3 py-2 rounded-xl text-[11px] font-extrabold text-slate-700 flex items-center gap-1.5 shrink-0 cursor-pointer">
+                    <i class="ph-bold ph-image text-sm text-indigo-600"></i>
+                    <span>Change Photo</span>
+                </button>
+
+                <!-- Tactile Hold for Before/After Button (Smaller Font Size) -->
+                <button id="compareBtn" class="btn-3d-primary flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-white text-[11px] font-extrabold tracking-tight flex items-center justify-center gap-1.5 cursor-pointer select-none">
+                    <i class="ph-fill ph-eye text-sm"></i>
+                    <span>Hold for Before / After</span>
+                </button>
+            </div>
+        </section>
+
+        <aside class="w-full lg:w-[440px] panel-3d rounded-[2rem] flex flex-col shrink-0 z-20 overflow-hidden">
+            
+            <!-- 3D Recessed Segmented Tab Bar (Order: 1. Filters & Blur, 2. Presets, 3. Color Scheme) -->
+            <div class="p-3.5 pb-2 shrink-0">
+                <div class="well-3d p-1.5 rounded-2xl grid grid-cols-3 gap-1.5">
+                    <button onclick="switchTab('adjust')" id="tabBtn-adjust" class="tab-btn py-2.5 px-2 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all bg-white text-indigo-600 shadow-md cursor-pointer">
+                        <i class="ph-fill ph-sliders-horizontal text-base"></i>
+                        <span>Filters & Blur</span>
+                    </button>
+                    <button onclick="switchTab('presets')" id="tabBtn-presets" class="tab-btn py-2.5 px-2 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
+                        <i class="ph-fill ph-magic-wand text-base"></i>
+                        <span>Presets</span>
+                    </button>
+                    <button onclick="switchTab('colors')" id="tabBtn-colors" class="tab-btn py-2.5 px-2 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all text-slate-500 hover:text-slate-800 cursor-pointer">
+                        <i class="ph-fill ph-palette text-base"></i>
+                        <span>Color Scheme</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Controls Body -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5 max-h-[540px] lg:max-h-[560px]">
+
+                <!-- TAB 1 (FIRST): FILTERS & BLUR SLIDERS -->
+                <div id="tab-adjust" class="space-y-3.5">
+                    
+                    <!-- Brightness -->
+                    <div class="card-3d p-3.5 rounded-2xl space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-700 font-extrabold flex items-center gap-1.5">
+                                <i class="ph-fill ph-sun text-amber-500 text-base"></i> Brightness
+                            </span>
+                            <span id="val-brightness" class="text-indigo-600 font-mono font-extrabold">100%</span>
+                        </div>
+                        <input type="range" id="slider-brightness" min="20" max="200" value="100">
+                    </div>
+
+                    <!-- Contrast -->
+                    <div class="card-3d p-3.5 rounded-2xl space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-700 font-extrabold flex items-center gap-1.5">
+                                <i class="ph-fill ph-circle-half text-indigo-500 text-base"></i> Contrast
+                            </span>
+                            <span id="val-contrast" class="text-indigo-600 font-mono font-extrabold">100%</span>
+                        </div>
+                        <input type="range" id="slider-contrast" min="20" max="200" value="100">
+                    </div>
+
+                    <!-- Saturation -->
+                    <div class="card-3d p-3.5 rounded-2xl space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-700 font-extrabold flex items-center gap-1.5">
+                                <i class="ph-fill ph-drop text-pink-500 text-base"></i> Saturation
+                            </span>
+                            <span id="val-saturation" class="text-indigo-600 font-mono font-extrabold">100%</span>
+                        </div>
+                        <input type="range" id="slider-saturation" min="0" max="250" value="100">
+                    </div>
+
+                    <!-- Optical Blur -->
+                    <div class="card-3d p-3.5 rounded-2xl space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-700 font-extrabold flex items-center gap-1.5">
+                                <i class="ph-fill ph-aperture text-cyan-500 text-base"></i> Optical Blur
+                            </span>
+                            <span id="val-blur" class="text-indigo-600 font-mono font-extrabold">0 px</span>
+                        </div>
+                        <input type="range" id="slider-blur" min="0" max="30" step="0.5" value="0">
+                    </div>
+
+                    <!-- Lens Vignette -->
+                    <div class="card-3d p-3.5 rounded-2xl space-y-2">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-slate-700 font-extrabold flex items-center gap-1.5">
+                                <i class="ph-fill ph-vignette text-purple-500 text-base"></i> Lens Vignette
+                            </span>
+                            <span id="val-vignette" class="text-indigo-600 font-mono font-extrabold">0%</span>
+                        </div>
+                        <input type="range" id="slider-vignette" min="0" max="100" value="0">
+                    </div>
+
+                    <!-- Vintage Sepia & B&W & Invert -->
+                    <div class="card-3d p-3.5 rounded-2xl space-y-3.5">
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-700 font-extrabold">Vintage Sepia</span>
+                                <span id="val-sepia" class="text-indigo-600 font-mono font-extrabold">0%</span>
+                            </div>
+                            <input type="range" id="slider-sepia" min="0" max="100" value="0">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-700 font-extrabold">Grayscale (B&W)</span>
+                                <span id="val-grayscale" class="text-indigo-600 font-mono font-extrabold">0%</span>
+                            </div>
+                            <input type="range" id="slider-grayscale" min="0" max="100" value="0">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-700 font-extrabold">Invert Colors</span>
+                                <span id="val-invert" class="text-indigo-600 font-mono font-extrabold">0%</span>
+                            </div>
+                            <input type="range" id="slider-invert" min="0" max="100" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2 (SECOND): EYE-CATCHING 3D STUDIO PRESETS -->
+                <div id="tab-presets" class="hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-extrabold text-slate-800">3D Studio Presets</h2>
+                            <p class="text-[11px] font-medium text-slate-500">Eye-catching handcrafted color looks</p>
+                        </div>
+                        <span class="text-[11px] px-2.5 py-1 rounded-lg well-3d text-indigo-600 font-extrabold">10 Looks</span>
+                    </div>
+
+                    <div id="presetGrid" class="grid grid-cols-2 gap-3.5">
+                        <!-- Dynamically Populated via JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 3 (THIRD): COLOR SCHEME & TINT CHANGER -->
+                <div id="tab-colors" class="hidden space-y-5">
+                    
+                    <!-- Ready-made 3D Color Schemes -->
+                    <div class="card-3d p-4 rounded-2xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+                                <i class="ph-fill ph-swatches text-indigo-500 text-base"></i>
+                                Dual-Tone Color Schemes
+                            </span>
+                            <button onclick="clearColorTint()" class="text-[11px] text-rose-500 hover:text-rose-600 font-extrabold cursor-pointer">
+                                Clear Tint
+                            </button>
+                        </div>
+
+                        <div id="colorSchemeGrid" class="grid grid-cols-4 gap-2.5">
+                            <!-- Dynamically Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Custom Color Picker & Blend Mode -->
+                    <div class="card-3d p-4 rounded-2xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="text-xs font-extrabold text-slate-800 block">Custom Solid Color</label>
+                                <span class="text-[11px] text-slate-500 font-medium">Pick any shade for custom grading</span>
+                            </div>
+                            <div class="flex items-center gap-2 well-3d px-2.5 py-1.5 rounded-xl">
+                                <input type="color" id="customTintColor" value="#6366f1" class="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0">
+                                <span id="colorHexLabel" class="text-xs font-mono font-bold text-slate-700 uppercase">#6366F1</span>
+                            </div>
+                        </div>
+
+                        <!-- Tint Intensity Slider -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-600 font-bold">Color Overlay Intensity</span>
+                                <span id="val-tintOpacity" class="text-indigo-600 font-mono font-extrabold">0%</span>
+                            </div>
+                            <input type="range" id="slider-tintOpacity" min="0" max="100" value="0">
+                        </div>
+
+                        <!-- Blend Mode Selector -->
+                        <div class="space-y-2 pt-1">
+                            <span class="text-xs text-slate-600 font-bold block">3D Blend Mode</span>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="setBlendMode('overlay')" data-mode="overlay" class="blend-btn py-2 px-2 rounded-xl text-xs font-extrabold border transition-all bg-indigo-600 text-white border-indigo-600 shadow-md cursor-pointer">Overlay</button>
+                                <button onclick="setBlendMode('soft-light')" data-mode="soft-light" class="blend-btn py-2 px-2 rounded-xl text-xs font-extrabold border transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">Soft Light</button>
+                                <button onclick="setBlendMode('screen')" data-mode="screen" class="blend-btn py-2 px-2 rounded-xl text-xs font-extrabold border transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">Screen</button>
+                                <button onclick="setBlendMode('multiply')" data-mode="multiply" class="blend-btn py-2 px-2 rounded-xl text-xs font-extrabold border transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">Multiply</button>
+                                <button onclick="setBlendMode('color')" data-mode="color" class="blend-btn py-2 px-2 rounded-xl text-xs font-extrabold border transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer">Colorize</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hue Shift & Temperature -->
+                    <div class="card-3d p-4 rounded-2xl space-y-4">
+                        <!-- Hue Rotate -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-700 font-extrabold flex items-center gap-1.5">
+                                    <i class="ph-fill ph-rainbow text-pink-500 text-sm"></i> Hue Shift (Color Changer)
+                                </span>
+                                <span id="val-hue" class="text-indigo-600 font-mono font-extrabold">0°</span>
+                            </div>
+                            <input type="range" id="slider-hue" min="-180" max="180" value="0">
+                        </div>
+
+                        <!-- Warm / Cool Temperature -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-700 font-extrabold flex items-center gap-1.5">
+                                    <i class="ph-fill ph-thermometer-simple text-amber-500 text-sm"></i> Color Temperature
+                                </span>
+                                <span id="val-temperature" class="text-indigo-600 font-mono font-extrabold">0</span>
+                            </div>
+                            <input type="range" id="slider-temperature" min="-100" max="100" value="0">
+                            <div class="flex justify-between text-[10px] font-bold text-slate-400">
+                                <span>❄️ Cool Blue</span>
+                                <span>Neutral</span>
+                                <span>☀️ Warm Amber</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="px-5 py-3.5 border-t border-slate-200/80 bg-white/60 flex items-center justify-between text-[11px] font-semibold text-slate-500 shrink-0">
+                <span class="flex items-center gap-1.5"><i class="ph-fill ph-sparkle text-indigo-500"></i> 60fps Hardware Canvas</span>
+                <span>Press & Hold image to compare</span>
+            </div>
+        </aside>
+    </main>
+
+    <section class="space-y-5 pt-2 pb-6">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 px-1">
+            <div>
+                <span class="text-[11px] font-extrabold uppercase tracking-widest text-indigo-600">3D Studio Architecture</span>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Pro-Grade Color & Filter Capabilities</h2>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 font-medium">Zero server uploads — 100% client-side GPU accelerated image processing</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Card 1 -->
+            <div class="card-3d p-6 rounded-3xl flex flex-col justify-between gap-4">
+                <div class="w-12 h-12 rounded-2xl well-3d flex items-center justify-center text-indigo-600">
+                    <i class="ph-fill ph-palette text-2xl"></i>
+                </div>
+                <div class="space-y-1.5">
+                    <h3 class="text-base font-extrabold text-slate-800">3D Color Schemes</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                        Apply atmospheric dual-tone gradients, custom solid color tints, 360° hue shifting, and warm/cool color temperature grading.
+                    </p>
+                </div>
+                <div class="pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-bold text-indigo-600">
+                    <span>5 Blend Modes</span>
+                    <i class="ph-bold ph-arrow-up-right"></i>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card-3d p-6 rounded-3xl flex flex-col justify-between gap-4">
+                <div class="w-12 h-12 rounded-2xl well-3d flex items-center justify-center text-pink-500">
+                    <i class="ph-fill ph-magic-wand text-2xl"></i>
+                </div>
+                <div class="space-y-1.5">
+                    <h3 class="text-base font-extrabold text-slate-800">One-Click Presets</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                        Transform photos immediately with 10 handcrafted studio looks including Cinematic, Golden Hour, Cyberpunk, and Classic Noir.
+                    </p>
+                </div>
+                <div class="pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-bold text-pink-600">
+                    <span>10 Instant Looks</span>
+                    <i class="ph-bold ph-sparkle"></i>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card-3d p-6 rounded-3xl flex flex-col justify-between gap-4">
+                <div class="w-12 h-12 rounded-2xl well-3d flex items-center justify-center text-cyan-500">
+                    <i class="ph-fill ph-sliders text-2xl"></i>
+                </div>
+                <div class="space-y-1.5">
+                    <h3 class="text-base font-extrabold text-slate-800">Optical Blur & Filters</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                        Fine-tune brightness, contrast, saturation, Gaussian optical blur, radial lens vignette, vintage sepia, and color inversion.
+                    </p>
+                </div>
+                <div class="pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-bold text-cyan-600">
+                    <span>Real-Time Sliders</span>
+                    <i class="ph-bold ph-faders"></i>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card-3d p-6 rounded-3xl flex flex-col justify-between gap-4">
+                <div class="w-12 h-12 rounded-2xl well-3d flex items-center justify-center text-emerald-500">
+                    <i class="ph-fill ph-eye text-2xl"></i>
+                </div>
+                <div class="space-y-1.5">
+                    <h3 class="text-base font-extrabold text-slate-800">Before / After & Export</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                        Press and hold directly on your photo or the comparison button to inspect your edits, then export lossless high-res PNG files.
+                    </p>
+                </div>
+                <div class="pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-bold text-emerald-600">
+                    <span>Lossless HD PNG</span>
+                    <i class="ph-bold ph-download-simple"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Floating Notification Toast -->
+    <div id="toast" class="fixed top-6 right-6 bg-white border-2 border-indigo-100 text-slate-800 px-4 py-3 rounded-2xl shadow-[0_15px_30px_rgba(15,23,42,0.15),0_4px_0_#e0e7ff] flex items-center gap-3 z-50 transition-all duration-300 opacity-0 translate-y-[-12px] pointer-events-none">
+        <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+            <i class="ph-bold ph-check text-base"></i>
+        </div>
+        <span id="toastMsg" class="text-xs font-extrabold">Action completed!</span>
+    </div>
+
+    <script>
+        // --- CORE APPLICATION STATE ---
+        const canvas = document.getElementById('editorCanvas');
+        const ctx = canvas.getContext('2d');
+        let currentImage = null;
+        let isComparing = false;
+        let activePresetId = 'normal';
+        let is3DTiltEnabled = true;
+
+        const defaultState = {
+            brightness: 100,
+            contrast: 100,
+            saturation: 100,
+            hue: 0,
+            blur: 0,
+            sepia: 0,
+            grayscale: 0,
+            invert: 0,
+            vignette: 0,
+            temperature: 0,
+            tintColor: '#6366f1',
+            tintColor2: null,
+            tintOpacity: 0,
+            blendMode: 'overlay'
+        };
+
+        let state = { ...defaultState };
+
+        // Curated Eye-Catching Studio Presets (English)
+        const presets = [
+            {
+                id: 'normal',
+                name: 'Original',
+                desc: 'Pure unfiltered tone',
+                tag: 'RAW',
+                icon: 'ph-sparkle',
+                badge: 'linear-gradient(135deg, #64748b, #334155)',
+                values: { ...defaultState }
+            },
+            {
+                id: 'cinematic',
+                name: 'Cinematic Teal',
+                desc: 'Anamorphic movie grade',
+                tag: 'FILM',
+                icon: 'ph-film-strip',
+                badge: 'linear-gradient(135deg, #0d9488, #f59e0b)',
+                values: { ...defaultState, contrast: 122, brightness: 96, saturation: 112, vignette: 35, tintColor: '#0f766e', tintColor2: '#f59e0b', tintOpacity: 26, blendMode: 'soft-light' }
+            },
+            {
+                id: 'golden',
+                name: 'Golden Hour',
+                desc: 'Radiant sunset warmth',
+                tag: 'WARM',
+                icon: 'ph-sun-horizon',
+                badge: 'linear-gradient(135deg, #f97316, #eab308)',
+                values: { ...defaultState, brightness: 106, contrast: 108, saturation: 128, temperature: 45, tintColor: '#f97316', tintColor2: '#fde047', tintOpacity: 24, blendMode: 'overlay' }
+            },
+            {
+                id: 'cyberpunk',
+                name: 'Cyberpunk 3D',
+                desc: 'Electric neon nights',
+                tag: 'NEON',
+                icon: 'ph-lightning',
+                badge: 'linear-gradient(135deg, #ec4899, #06b6d4)',
+                values: { ...defaultState, contrast: 130, saturation: 145, hue: -12, tintColor: '#ec4899', tintColor2: '#06b6d4', tintOpacity: 40, blendMode: 'screen' }
+            },
+            {
+                id: 'vintage',
+                name: 'Retro Film 90s',
+                desc: 'Warm analog nostalgia',
+                tag: 'RETRO',
+                icon: 'ph-camera',
+                badge: 'linear-gradient(135deg, #b45309, #fde68a)',
+                values: { ...defaultState, brightness: 104, contrast: 90, saturation: 82, sepia: 42, vignette: 40, temperature: 25 }
+            },
+            {
+                id: 'noir',
+                name: 'Classic Noir',
+                desc: 'Deep dramatic B&W',
+                tag: 'MONO',
+                icon: 'ph-moon-stars',
+                badge: 'linear-gradient(135deg, #0f172a, #64748b)',
+                values: { ...defaultState, grayscale: 100, contrast: 145, brightness: 96, vignette: 50 }
+            },
+            {
+                id: 'arctic',
+                name: 'Arctic Frost',
+                desc: 'Crystal icy blue air',
+                tag: 'COOL',
+                icon: 'ph-snowflake',
+                badge: 'linear-gradient(135deg, #0284c7, #38bdf8)',
+                values: { ...defaultState, brightness: 106, contrast: 112, saturation: 88, temperature: -55, tintColor: '#38bdf8', tintOpacity: 20, blendMode: 'soft-light' }
+            },
+            {
+                id: 'dreamy',
+                name: 'Dreamy Soft',
+                desc: 'Pastel velvet bloom',
+                tag: 'GLOW',
+                icon: 'ph-cloud-moon',
+                badge: 'linear-gradient(135deg, #a855f7, #ec4899)',
+                values: { ...defaultState, brightness: 110, contrast: 92, saturation: 115, blur: 1.5, tintColor: '#c084fc', tintColor2: '#f472b6', tintOpacity: 28, blendMode: 'screen' }
+            },
+            {
+                id: 'emerald',
+                name: 'Emerald Moody',
+                desc: 'Rich botanical tones',
+                tag: 'LUXE',
+                icon: 'ph-leaf',
+                badge: 'linear-gradient(135deg, #065f46, #10b981)',
+                values: { ...defaultState, brightness: 95, contrast: 120, saturation: 92, vignette: 35, tintColor: '#059669', tintOpacity: 25, blendMode: 'overlay' }
+            },
+            {
+                id: 'vivid',
+                name: 'HDR Vivid Pop',
+                desc: 'Ultra punchy clarity',
+                tag: 'HDR',
+                icon: 'ph-fire',
+                badge: 'linear-gradient(135deg, #ef4444, #3b82f6)',
+                values: { ...defaultState, brightness: 105, contrast: 126, saturation: 158, vignette: 15 }
+            }
+        ];
+
+        // Dual-Tone 3D Color Schemes
+        const colorSchemes = [
+            { name: 'Sunset', c1: '#f43f5e', c2: '#fb923c', mode: 'overlay', op: 38 },
+            { name: 'Cyber', c1: '#d946ef', c2: '#06b6d4', mode: 'screen', op: 42 },
+            { name: 'Oceanic', c1: '#1d4ed8', c2: '#2dd4bf', mode: 'soft-light', op: 45 },
+            { name: 'Emerald', c1: '#047857', c2: '#a3e635', mode: 'overlay', op: 34 },
+            { name: 'Royal', c1: '#6d28d9', c2: '#f472b6', mode: 'screen', op: 38 },
+            { name: 'Gold Dust', c1: '#b45309', c2: '#fde047', mode: 'soft-light', op: 45 },
+            { name: 'Crimson', c1: '#991b1b', c2: '#f87171', mode: 'overlay', op: 35 },
+            { name: 'Midnight', c1: '#0f172a', c2: '#38bdf8', mode: 'multiply', op: 36 }
+        ];
+
+        function initUI() {
+            renderPresets();
+            renderColorSchemes();
+            bindSliders();
+            bindCompareEvents();
+            bindDragAndDrop();
+            init3DTiltEffect();
+        }
+
+        function renderPresets() {
+            const grid = document.getElementById('presetGrid');
+            grid.innerHTML = presets.map(p => {
+                const isActive = p.id === activePresetId;
+                return `
+                <button onclick="applyPreset('${p.id}')" id="preset-${p.id}" 
+                    class="preset-card card-3d p-3 rounded-2xl text-left flex flex-col gap-2.5 cursor-pointer relative overflow-hidden group ${isActive ? 'active-card' : ''}">
+                    
+                    <!-- Top Visual Preview Banner with 3D Icon & Tag -->
+                    <div class="w-full h-14 rounded-xl relative overflow-hidden flex items-center justify-between px-3 shadow-inner border border-white/60" style="background: ${p.badge}">
+                        <div class="w-8 h-8 rounded-lg bg-white/25 backdrop-blur-md flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform duration-200">
+                            <i class="ph-fill ${p.icon} text-lg"></i>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-black/25 text-white backdrop-blur-sm border border-white/20">
+                            ${p.tag}
+                        </span>
+                    </div>
+
+                    <!-- Preset Title & Active Checkmark -->
+                    <div class="flex items-center justify-between gap-1 px-0.5">
+                        <div class="overflow-hidden">
+                            <div class="text-xs font-extrabold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">${p.name}</div>
+                            <div class="text-[10px] font-medium text-slate-500 truncate">${p.desc}</div>
+                        </div>
+                        <div class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 transition-all ${isActive ? 'bg-indigo-600 text-white shadow-sm scale-100' : 'bg-slate-200/70 text-transparent scale-90'}">
+                            <i class="ph-bold ph-check text-[10px]"></i>
+                        </div>
+                    </div>
+                </button>
+            `}).join('');
+        }
+
+        function renderColorSchemes() {
+            const grid = document.getElementById('colorSchemeGrid');
+            grid.innerHTML = colorSchemes.map((cs, idx) => `
+                <button onclick="applyColorScheme(${idx})" class="card-3d p-2 rounded-xl flex flex-col items-center gap-1.5 cursor-pointer group">
+                    <div class="w-9 h-9 rounded-full shadow-md border-2 border-white group-hover:scale-110 transition-transform" 
+                         style="background: linear-gradient(135deg, ${cs.c1}, ${cs.c2})"></div>
+                    <span class="text-[10px] font-extrabold text-slate-600 group-hover:text-indigo-600">${cs.name}</span>
+                </button>
+            `).join('');
+        }
+
+        // --- TAB NAVIGATION ---
+        function switchTab(tabName) {
+            ['adjust', 'presets', 'colors'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tabBtn-${t}`);
+                btn.classList.remove('bg-white', 'text-indigo-600', 'shadow-md');
+                btn.classList.add('text-slate-500');
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tabBtn-${tabName}`);
+            activeBtn.classList.remove('text-slate-500');
+            activeBtn.classList.add('bg-white', 'text-indigo-600', 'shadow-md');
+        }
+
+        // --- PRESET & COLOR SCHEME HANDLERS ---
+        function applyPreset(presetId) {
+            const found = presets.find(p => p.id === presetId);
+            if (!found) return;
+            activePresetId = presetId;
+            state = { ...found.values };
+            syncSlidersWithState();
+            renderPresets();
+            renderCanvas();
+        }
+
+        function applyColorScheme(index) {
+            const cs = colorSchemes[index];
+            if (!cs) return;
+            state.tintColor = cs.c1;
+            state.tintColor2 = cs.c2;
+            state.blendMode = cs.mode;
+            state.tintOpacity = cs.op;
+            syncSlidersWithState();
+            renderCanvas();
+        }
+
+        function clearColorTint() {
+            state.tintOpacity = 0;
+            state.tintColor2 = null;
+            syncSlidersWithState();
+            renderCanvas();
+        }
+
+        function setBlendMode(mode) {
+            state.blendMode = mode;
+            if (state.tintOpacity === 0) {
+                state.tintOpacity = 35;
+            }
+            syncSlidersWithState();
+            renderCanvas();
+        }
+
+        // --- SLIDER BINDINGS ---
+        function bindSliders() {
+            const sliderKeys = [
+                { key: 'brightness', unit: '%' },
+                { key: 'contrast', unit: '%' },
+                { key: 'saturation', unit: '%' },
+                { key: 'hue', unit: '°' },
+                { key: 'blur', unit: ' px' },
+                { key: 'sepia', unit: '%' },
+                { key: 'grayscale', unit: '%' },
+                { key: 'invert', unit: '%' },
+                { key: 'vignette', unit: '%' },
+                { key: 'temperature', unit: '' },
+                { key: 'tintOpacity', unit: '%' }
+            ];
+
+            sliderKeys.forEach(({ key, unit }) => {
+                const slider = document.getElementById(`slider-${key}`);
+                const label = document.getElementById(`val-${key}`);
+                if (!slider) return;
+
+                slider.addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value);
+                    state[key] = val;
+                    if (label) label.textContent = `${val}${unit}`;
+                    renderCanvas();
+                });
+            });
+
+            const colorInput = document.getElementById('customTintColor');
+            const hexLabel = document.getElementById('colorHexLabel');
+            colorInput.addEventListener('input', (e) => {
+                state.tintColor = e.target.value;
+                state.tintColor2 = null;
+                hexLabel.textContent = e.target.value.toUpperCase();
+                if (state.tintOpacity === 0) {
+                    state.tintOpacity = 35;
+                    document.getElementById('slider-tintOpacity').value = 35;
+                    document.getElementById('val-tintOpacity').textContent = '35%';
+                }
+                renderCanvas();
+            });
+
+            document.getElementById('resetAllBtn').addEventListener('click', () => {
+                activePresetId = 'normal';
+                state = { ...defaultState };
+                syncSlidersWithState();
+                renderPresets();
+                renderCanvas();
+                showToast('All adjustments reset to original');
+            });
+
+            document.getElementById('fileInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) handleImageFile(file);
+            });
+
+            document.getElementById('downloadBtn').addEventListener('click', downloadEditedImage);
+        }
+
+        function syncSlidersWithState() {
+            const units = {
+                brightness: '%', contrast: '%', saturation: '%',
+                hue: '°', blur: ' px', sepia: '%', grayscale: '%',
+                invert: '%', vignette: '%', temperature: '', tintOpacity: '%'
+            };
+
+            Object.keys(units).forEach(key => {
+                const slider = document.getElementById(`slider-${key}`);
+                const label = document.getElementById(`val-${key}`);
+                if (slider) slider.value = state[key];
+                if (label) label.textContent = `${state[key]}${units[key]}`;
+            });
+
+            document.getElementById('customTintColor').value = state.tintColor;
+            document.getElementById('colorHexLabel').textContent = state.tintColor.toUpperCase();
+
+            document.querySelectorAll('.blend-btn').forEach(btn => {
+                if (btn.dataset.mode === state.blendMode) {
+                    btn.className = 'blend-btn py-2 px-2 rounded-xl text-xs font-extrabold border transition-all bg-indigo-600 text-white border-indigo-600 shadow-md cursor-pointer';
+                } else {
+                    btn.className = 'blend-btn py-2 px-2 rounded-xl text-xs font-extrabold border transition-all bg-white border-slate-200 text-slate-600 hover:bg-slate-50 cursor-pointer';
+                }
+            });
+        }
+
+        // --- INTERACTIVE 3D TILT STAGE ---
+        function init3DTiltEffect() {
+            const stage = document.getElementById('dropZone');
+            stage.addEventListener('mousemove', (e) => {
+                if (!is3DTiltEnabled || !currentImage) return;
+                const rect = stage.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -7;
+                const rotateY = ((x - centerX) / centerX) * 7;
+
+                canvas.style.transform = `rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.01)`;
+            });
+
+            stage.addEventListener('mouseleave', () => {
+                canvas.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+            });
+        }
+
+        function toggle3DTilt() {
+            is3DTiltEnabled = !is3DTiltEnabled;
+            const textEl = document.getElementById('tiltStatusText');
+            textEl.textContent = is3DTiltEnabled ? '3D Tilt: ON' : '3D Tilt: OFF';
+            if (!is3DTiltEnabled) {
+                canvas.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+            }
+        }
+
+        // --- BEFORE / AFTER HOLD COMPARISON ---
+        function bindCompareEvents() {
+            const compareBtn = document.getElementById('compareBtn');
+            const badge = document.getElementById('statusBadge');
+
+            const startCompare = (e) => {
+                if (!currentImage) return;
+                if (e.cancelable) e.preventDefault();
+                isComparing = true;
+                compareBtn.classList.add('is-pressed');
+                badge.classList.remove('opacity-0', 'scale-90');
+                badge.classList.add('opacity-100', 'scale-100');
+                renderCanvas();
+            };
+
+            const endCompare = () => {
+                if (!isComparing) return;
+                isComparing = false;
+                compareBtn.classList.remove('is-pressed');
+                badge.classList.remove('opacity-100', 'scale-100');
+                badge.classList.add('opacity-0', 'scale-90');
+                renderCanvas();
+            };
+
+            compareBtn.addEventListener('mousedown', startCompare);
+            compareBtn.addEventListener('touchstart', startCompare, { passive: false });
+            canvas.addEventListener('mousedown', startCompare);
+            canvas.addEventListener('touchstart', startCompare, { passive: false });
+
+            window.addEventListener('mouseup', endCompare);
+            window.addEventListener('touchend', endCompare);
+            window.addEventListener('touchcancel', endCompare);
+        }
+
+        // --- IMAGE UPLOAD & DRAG-DROP ---
+        function handleImageFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select a valid image file!');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    setNewImage(img);
+                    showToast('Photo uploaded successfully!');
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function setNewImage(img) {
+            const maxDim = 2000;
+            let w = img.naturalWidth || img.width;
+            let h = img.naturalHeight || img.height;
+
+            if (w > maxDim || h > maxDim) {
+                if (w > h) {
+                    h = Math.round((h * maxDim) / w);
+                    w = maxDim;
+                } else {
+                    w = Math.round((w * maxDim) / h);
+                    h = maxDim;
+                }
+            }
+
+            canvas.width = w;
+            canvas.height = h;
+            currentImage = img;
+
+            // Hide empty upload card and reveal 3D canvas + bottom dock
+            document.getElementById('emptyUploadState').classList.add('hidden');
+            const wrapper = document.getElementById('canvasWrapper');
+            wrapper.classList.remove('hidden');
+            wrapper.classList.add('flex');
+
+            const bottomDock = document.getElementById('stageBottomDock');
+            bottomDock.classList.remove('hidden');
+            bottomDock.classList.add('flex');
+
+            const dot = document.getElementById('statusDot');
+            dot.classList.remove('bg-amber-400');
+            dot.classList.add('bg-emerald-500');
+
+            document.getElementById('resolutionInfo').textContent = `${w} × ${h} px`;
+            renderCanvas();
+        }
+
+        function bindDragAndDrop() {
+            const dropZone = document.getElementById('dropZone');
+            const overlay = document.getElementById('dragOverlay');
+
+            ['dragenter', 'dragover'].forEach(evt => {
+                dropZone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    overlay.classList.remove('hidden');
+                    overlay.classList.add('flex');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(evt => {
+                dropZone.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('flex');
+                });
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const file = e.dataTransfer.files[0];
+                if (file) handleImageFile(file);
+            });
+        }
+
+        // --- REAL-TIME CANVAS RENDERING ENGINE ---
+        function renderCanvas() {
+            if (!currentImage || !currentImage.width) return;
+
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Original (Before) state when holding
+            if (isComparing) {
+                ctx.filter = 'none';
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.drawImage(currentImage, 0, 0, w, h);
+                return;
+            }
+
+            // 2. Apply Hardware-Accelerated CSS Filters
+            ctx.save();
+            const filterString = [
+                `brightness(${state.brightness}%)`,
+                `contrast(${state.contrast}%)`,
+                `saturate(${state.saturation}%)`,
+                `hue-rotate(${state.hue}deg)`,
+                `blur(${state.blur}px)`,
+                `sepia(${state.sepia}%)`,
+                `grayscale(${state.grayscale}%)`,
+                `invert(${state.invert}%)`
+            ].join(' ');
+
+            ctx.filter = filterString;
+            ctx.drawImage(currentImage, 0, 0, w, h);
+            ctx.restore();
+
+            // 3. Apply Color Temperature (Warm / Cool)
+            if (state.temperature !== 0) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'soft-light';
+                const tempAlpha = Math.abs(state.temperature) / 220;
+                ctx.fillStyle = state.temperature > 0
+                    ? `rgba(255, 145, 0, ${tempAlpha})`
+                    : `rgba(0, 150, 255, ${tempAlpha})`;
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+
+            // 4. Apply Color Scheme / Gradient or Solid Tint Overlay
+            if (state.tintOpacity > 0) {
+                ctx.save();
+                ctx.globalCompositeOperation = state.blendMode;
+                ctx.globalAlpha = state.tintOpacity / 100;
+
+                if (state.tintColor2) {
+                    const grad = ctx.createLinearGradient(0, 0, w, h);
+                    grad.addColorStop(0, state.tintColor);
+                    grad.addColorStop(1, state.tintColor2);
+                    ctx.fillStyle = grad;
+                } else {
+                    ctx.fillStyle = state.tintColor;
+                }
+
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+
+            // 5. Apply Radial Optical Vignette
+            if (state.vignette > 0) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'source-over';
+                const radius = Math.max(w, h) * 0.75;
+                const grad = ctx.createRadialGradient(w / 2, h / 2, radius * 0.25, w / 2, h / 2, radius);
+                const vAlpha = (state.vignette / 100) * 0.85;
+                grad.addColorStop(0, 'rgba(0,0,0,0)');
+                grad.addColorStop(1, `rgba(10, 14, 26, ${vAlpha})`);
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+        }
+
+        // --- HIGH-RESOLUTION EXPORT ---
+        function downloadEditedImage() {
+            if (!currentImage || !currentImage.width) {
+                showToast('Please upload a photo first before exporting!');
+                return;
+            }
+            try {
+                isComparing = false;
+                renderCanvas();
+                const dataUrl = canvas.toDataURL('image/png', 1.0);
+                const link = document.createElement('a');
+                link.download = `lumina-3d-studio-${Date.now()}.png`;
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('High-Resolution PNG Exported!');
+            } catch (err) {
+                showToast('Could not export image. Please try uploading again.');
+            }
+        }
+
+        // --- TOAST FEEDBACK ---
+        let toastTimer = null;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMsg');
+            msg.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-[-12px]');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-[-12px]');
+            }, 2600);
+        }
+
+        window.addEventListener('DOMContentLoaded', initUI);
+    </script>
+</body>
+</html>
